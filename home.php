@@ -67,7 +67,6 @@
             $('table tr').click(function() {
                 if ($(this).attr('class') == 'selected') {
                     $(this).removeClass('selected');
-                    $(this).css('background-color', 'white');
                 } else {
                     $((this)).addClass('selected');
                 }
