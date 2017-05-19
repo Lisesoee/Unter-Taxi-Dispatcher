@@ -45,7 +45,37 @@
             align-self: flex-start;
             align-content: flex-start;
         }
+
+        /*Adding some nice look and feel to the table rows: */
+        tr:nth-child(odd) { background-color : ##99ccff; }
+        tr:nth-child(even) { background-color : ##b3daff; }
+        tr:hover { background-color : #0066ff; }
+
+        /*Makes sure that the table header doesn't light up on hover like the other table-rows*/
+        th {
+            background-color: #fff;}
+
+        .selected {
+            background-color: #0066ff;
+        }
+
     </style>
+
+    <script>
+        $(document).ready(function() {
+
+            $('table tr').click(function() {
+                if ($(this).attr('class') == 'selected') {
+                    $(this).removeClass('selected');
+                    $(this).css('background-color', 'white');
+                } else {
+                    $((this)).addClass('selected');
+                }
+            });
+
+        });
+    </script>
+
 </head>
 
 <header>
