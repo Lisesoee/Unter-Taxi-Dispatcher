@@ -5,6 +5,9 @@
  * Date: 16-05-2017
  * Time: 14:43
  */
+include('Database.php');
+
+
 ?>
 
 <html>
@@ -47,13 +50,22 @@
         }
 
         /*Adding some nice look and feel to the table rows: */
-        tr:nth-child(odd) { background-color : ##99ccff; }
-        tr:nth-child(even) { background-color : ##b3daff; }
-        tr:hover { background-color : #0066ff; }
+        tr:nth-child(odd) {
+            background-color: # #99ccff;
+        }
+
+        tr:nth-child(even) {
+            background-color: # #b3daff;
+        }
+
+        tr:hover {
+            background-color: #0066ff;
+        }
 
         /*Makes sure that the table header doesn't light up on hover like the other table-rows*/
         th {
-            background-color: #fff;}
+            background-color: #fff;
+        }
 
         .selected {
             background-color: #0066ff;
@@ -62,9 +74,9 @@
     </style>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
 
-            $('table tr').click(function() {
+            $('table tr').click(function () {
                 if ($(this).attr('class') == 'selected') {
                     $(this).removeClass('selected');
                     $(this).css('background-color', 'white');
@@ -83,23 +95,25 @@
     <img src="images/taxi.png" alt="taxi picture" style="width:150px;height:99px;"/>
 </header>
 
+<nav>
+    //TODO: add navigation bar with home page. (Good design and allows for easy changes further on)
+</nav>
 
 <body>
 
 <!--Tables: -->
-<div class="flex-container" id = "tableSection">
+<div class="flex-container" id="tableSection">
     <div class="flex-item">
         <!--Table comments:
-        We use thread-tag to make column header look special.
+        We use thead-tag to make column header look special.
         When using this, all tr-tags needs to be in a tbody-tag.-->
-        <table id = "requestTable">
-
+        <table id="requestTable">
             <thead>
             <tr>
-                <th>Customer Name</th>
-                <th>Phone no</th>
+                <th>First name</th>
+                <th>Last name</th>
                 <th>Brand preference</th>
-                <th>Priority</th>
+                <th>Phone no</th>
                 <th>From address</th>
                 <th>To address</th>
             </tr>
@@ -107,28 +121,48 @@
 
 
             <tbody>
-            <tr>
-                <td>Jill Smith</td>
-                <td>12345678</td>
-                <td>Toyota</td>
-                <td>10</td>
-                <td>From this place</td>
-                <td>To this place</td>
-            </tr>
-            <tr>
-                <td>Jill Smith</td>
-                <td>12345678</td>
-                <td>Toyota</td>
-                <td>10</td>
-                <td>From this place</td>
-                <td>To this place</td>
-            </tr>
+
+            <!--PHP-code for getting requests for request table:-->
+            <?php
+            $Database = new Database();
+
+            $selectRequestsSql = "SELECT `FK_customer_ID`,`From_Location`, `To_Location` FROM `Request`";
+            $requests = $Database->doSelect($selectRequestsSql);
+
+            if (is_array($requests))
+            {
+                //For each request we get the specific customer information and inputs it all into the table:
+                foreach ($requests as $request)
+                {
+                    $customer_ID = $request["FK_customer_ID"];
+                    $selectCustomerSql = "SELECT `FName`,`LName`,`PhoneNb`,`Preferred_Brand` FROM `Customer` WHERE `Customer_ID` = " . $customer_ID;
+                    $customers = $Database->doSelect($selectCustomerSql);
+
+                    //Note: we need to check that it is an array to avoid errors
+                    if (is_array($customers))
+                    {
+                        foreach ($customers as $customer)
+                        {
+                            //We input the request information in the html table:
+                            echo "<tr>
+                            <td>" . $customer["FName"] . "</td>
+                            <td>" . $customer["LName"] . "</td>
+                            <td>" . $customer["Preferred_Brand"] . "</td>
+                            <td>" . $customer["PhoneNb"] . "</td>
+                            <td>" . $request["From_Location"] . "</td>
+                            <td>" . $request["To_Location"] . "</td>s
+                            </tr>";
+                        }
+                    }
+                }
+            }
+            ?>
             </tbody>
 
         </table>
     </div>
     <div class="flex-item">
-        <table id = "availableTaxisTable">
+        <table id="availableTaxisTable">
             <thead>
             <tr>
                 <th>Driver</th>
@@ -163,7 +197,7 @@
 
 
 <!--Bottom bar with label and button -->
-<div class="flex-container" id = "bottomBar">
+<div class="flex-container" id="bottomBar">
     <div class="flex-item">
         <label>
             Share mode is OFF
@@ -175,7 +209,6 @@
             Dispatch taxi
         </button>
     </div>
-
 
 
 </div>
