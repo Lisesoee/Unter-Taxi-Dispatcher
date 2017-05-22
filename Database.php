@@ -21,7 +21,7 @@ class Database{
         // Try and connect to the database
         if(!isset(self::$connection)) {
             // Load configuration as an array. Use the actual location of your configuration file
-            //(We chose to use an ini-file to avoid risking the information being shown on the web due to a server-error or the like.)
+            //(We chose to use an ini-file to avoid risking the information being shown on the web due to a server-error or the like.) This doesnt work for some reason..
             $config = parse_ini_file('./config.ini');
             //self::$connection = new mysqli($config['host'],$config['username'],$config['password'],$config['dbname']);
             self::$connection = new mysqli("86.52.212.76","DMU4","github","Lise&RayUnterTaxiDB");

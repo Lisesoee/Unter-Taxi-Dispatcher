@@ -72,10 +72,12 @@ include('Database.php');
         }
 
     </style>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
+        //This script adds functionality for selecting rows in the tables.
+        //The 'selected' class is coloured differently using CSS and will be used when dispatching a taxi to the selected requests
+        //TODO: restrict number of selections?
         $(document).ready(function () {
-
             $('table tr').click(function () {
                 if ($(this).attr('class') == 'selected') {
                     $(this).removeClass('selected');
@@ -83,7 +85,6 @@ include('Database.php');
                     $((this)).addClass('selected');
                 }
             });
-
         });
     </script>
 
@@ -111,7 +112,7 @@ include('Database.php');
             <tr>
                 <th>First name</th>
                 <th>Last name</th>
-                <th>Brand preference</th>
+                <th>Brand preff.</th>
                 <th>Phone no</th>
                 <th>From address</th>
                 <th>To address</th>
@@ -133,6 +134,8 @@ include('Database.php');
                 //For each request we get the specific customer information and inputs it all into the table:
                 foreach ($requests as $request)
                 {
+                    //NOTE: the customer id has to be in its own variable; if '$request[...]' is just appended to the
+                    // select-statement, errors will happen, while just appending the variable seems to be okay...
                     $customer_ID = $request["FK_customer_ID"];
                     $selectCustomerSql = "SELECT `FName`,`LName`,`PhoneNb`,`Preferred_Brand` FROM `Customer` WHERE `Customer_ID` = " . $customer_ID;
                     $customers = $Database->doSelect($selectCustomerSql);
@@ -215,11 +218,9 @@ include('Database.php');
 
 </body>
 
-
 <footer>
     Developed by Rayan and Lise inc.
 </footer>
-
 
 </html>
 
