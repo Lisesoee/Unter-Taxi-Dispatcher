@@ -116,6 +116,7 @@ include('Database.php');
                 <th>Phone no</th>
                 <th>From address</th>
                 <th>To address</th>
+                <th>Time</th>
             </tr>
             </thead>
 
@@ -124,13 +125,72 @@ include('Database.php');
 
             <!--PHP-code for getting requests for request table:-->
             <?php
-            $Database = new Database();
+            //$Database = new Database();
 
-            $selectRequestsSql = "SELECT `FK_customer_ID`,`From_Location`, `To_Location` FROM `Request`";
-            $requests = $Database->doSelect($selectRequestsSql);
+            //$selectRequestsSql = "SELECT `FK_customer_ID`,`From_Location`, `To_Location` FROM `Request`";
+            //$requests = $Database->doSelect($selectRequestsSql);
 
-            
-            if (is_array($requests))
+            //We get the json-file containing all the requests:
+            $taxiRequests = file_get_contents('http://localhost:8080/RESTapi.php/Request');
+            //We need to decode the http-response as an associative array so we can use and display it:
+            $arr= json_decode($taxiRequests, true);
+
+            //print_r($response);
+
+            if (is_array($arr))
+            {
+                echo "is ARRAY!!!!!";
+
+                foreach ($arr as $key => $value) {
+                    echo "<tr><td>$key</td><td>$value</td></tr>";
+
+
+                    //echo $value["From_Location"] . ", " . $value["To_Location"] . "<br>";
+                }
+
+                /**
+            echo "<table>";
+            foreach($arr as $k=>$v)
+                echo "<tr><td>$k</td><td>$v</td></tr>";
+            echo "</table>";
+
+
+            foreach ( $arr as $key => $jsons) {
+                $table ='<table class="'.$jsons['class'].'" border="1">';
+                foreach ($jsons as $rkey => $rvalue) {
+                    if($rkey=='head')
+                    {
+                        $table.='<tr>';
+                        foreach($rvalue as $rvv)
+                        {
+                            $table.='<th>'.$rvv.'</th>';
+                        }
+                        $table.='</tr>';
+                    }else
+                        if($rkey=='rows')
+                        {
+                            foreach($rvalue as $rvv)
+                            {
+                                $table.='<tr>';
+                                foreach($rvv as $rv)
+                                {
+                                    $table.='<td>'.$rv.'</td>';
+                                }
+                                $table.='</tr>';
+                            }
+                        }
+                }
+            }
+            echo $table;
+*/
+            }
+
+
+
+
+
+           /*
+            if (is_array($response))
             {
                 //For each request we get the specific customer information and inputs it all into the table:
                 foreach ($requests as $request)
@@ -158,7 +218,7 @@ include('Database.php');
                         }
                     }
                 }
-            }
+            }*/
             ?>
             </tbody>
 
