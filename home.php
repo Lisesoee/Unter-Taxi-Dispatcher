@@ -129,6 +129,7 @@ include('Database.php');
             $selectRequestsSql = "SELECT `FK_customer_ID`,`From_Location`, `To_Location` FROM `Request`";
             $requests = $Database->doSelect($selectRequestsSql);
 
+            
             if (is_array($requests))
             {
                 //For each request we get the specific customer information and inputs it all into the table:

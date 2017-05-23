@@ -18,7 +18,6 @@ $table = array_shift($request);
 $key = array_shift($request);
 
 
-
 switch ($method){
     case 'GET':
         $sql = "SELECT * FROM `$table`";
@@ -35,21 +34,27 @@ switch ($method){
 }
 
 //Execute sql statement
-//$result = $Database -> doSelect($sql);
-$result = $Database -> doExecuteQuery($sql);
+$result = $Database -> doSelect($sql);
+//$result = $Database -> doExecuteQuery($sql);
 
 echo "some more stuff";
 
 if (is_array($result)){
+    $i=0;
     foreach ($result as $item) {
+        $i++;
+        //echo $result["FName"];
+        //echo $result["LName"];
     }
+    echo json_encode($result);
 }
-echo json_decode($result);
+
 
 
 if ($method == 'GET') {
     if (!$key) echo '[';
-    for ($i = 0; $i < mysqli_num_rows($result); $i++) {
+    for ($i = 0; $i < mysqli_num_rows($result); $i++)
+    {
         echo ($i > 0 ? ',' : '') . json_encode(mysqli_fetch_object($result));
     }
     if (!$key) echo ']';
