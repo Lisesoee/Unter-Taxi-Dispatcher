@@ -41,17 +41,10 @@ $result = $Database -> doExecuteQuery($sql);
 echo "some more stuff";
 
 if (is_array($result)){
-    echo "ARRAY!";
-
-    $i=0;
     foreach ($result as $item) {
-        echo $i;
-        $i++;
-        echo $result["FName"];
-        echo $result["LName"];
     }
 }
-
+echo json_decode($result);
 
 
 if ($method == 'GET') {
@@ -60,6 +53,5 @@ if ($method == 'GET') {
         echo ($i > 0 ? ',' : '') . json_encode(mysqli_fetch_object($result));
     }
     if (!$key) echo ']';
-
 }
 
