@@ -236,6 +236,7 @@ include('Database.php');
 
             <tbody>
 
+            <!--PHP code for adding available taxis to the second table:-->
             <?php
             $availableTaxis = callRESTApi('Taxi');
 
@@ -257,21 +258,6 @@ include('Database.php');
             }
             ?>
 
-
-
-
-            <tr>
-                <td>Hans Hansen</td>
-                <td>Suzuki</td>
-                <td>123dgh23</td>
-                <td>10 kr</td>
-            </tr>
-            <tr>
-                <td>Hans Hansen</td>
-                <td>Suzuki</td>
-                <td>123dgh23</td>
-                <td>10 kr</td>
-            </tr>
             </tbody>
         </table>
     </div>

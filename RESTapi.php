@@ -55,7 +55,7 @@ switch ($method)
                 break;
         }
         //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
-        $sql = "INSERT INTO `$table` ($columns) VALUES (newvalue)";
+        $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
         break;
 
     case 'DELETE':
