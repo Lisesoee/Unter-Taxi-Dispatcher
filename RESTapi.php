@@ -43,7 +43,7 @@ switch ($method)
         switch ($table)
         {
             case 'Request':
-                $columns = "From_Location, To_Location";
+                $columns = "FK_Customer_ID, From_Location, To_Location";
                 break;
 
             case 'Customer':
