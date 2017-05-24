@@ -126,20 +126,29 @@ include('Database.php');
             <!--PHP-code for getting requests for request table:-->
             <?php
 
-            //We get the json-file containing all the requests:
-            $taxiRequests = file_get_contents('http://localhost:8080/RESTapi.php/Request');
-            //We need to decode the http-response so we can use and display it:
             /**
-             * Note: by adding a second parameter, 'true' to the json_decode method we could get the json as an
-             * associative array, which would allow for a different way of extracting the data, but we choose
-             * to use the json as an object to make the code more readable, since we can just extract data using
-             * the column names
+             * This function calls the RESTApi to place a HTTP request and do a CRUD function in the database
+             *
+             * @param $params: the parameters for specific operations
+             * @return bool|mixed|string: returns the decoded response from the RESTApi
              */
-            $taxiRequests = json_decode($taxiRequests);
+            function callRESTApi($params){
+                //We get the json-file containing all the requests:
+                $response = file_get_contents('http://localhost:8080/RESTapi.php/'.$params);
 
-            //print_r($taxiRequests); // use for seeing the json object print
+                /**
+                 * We need to decode the http-response so we can use and display it:
+                 *  Note: by adding a second parameter, 'true' to the json_decode method we could get the json as an
+                 *  associative array, which would allow for a different way of extracting the data, but we choose
+                 *  to use the json as an object to make the code more readable, since we can just extract data using
+                 *  the column names
+                 */
+                $response = json_decode($response);
+                return $response;
+            }
 
 
+            $taxiRequests = callRESTApi('Request');
             if (is_array($taxiRequests))
             {
                 foreach ($taxiRequests as $request) {
@@ -150,17 +159,16 @@ include('Database.php');
                     $time = $request -> TimeStamp;
 
                     //We get the given customer and decode the response:
-                    $customer = file_get_contents('http://localhost:8080/RESTapi.php/Customer/'.$customerID);
-                    $customer = json_decode($customer);
-                    //print_r($customer);
+                    $customer = callRESTApi('Customer/'.$customerID);
 
-
+                    //Even though its only one customer, we still loop the array:
                     foreach ($customer as $thisCustomer){
                         $FName = $thisCustomer -> FName;
                         $LName = $thisCustomer -> LName;
                         $PreferredBrand = $thisCustomer -> Preferred_Brand;
                         $PhoneNb = $thisCustomer -> PhoneNb;
 
+                        //For each request with the given customer, we echo to the table:
                         echo "<tr>
                         <td>$FName</td>
                         <td>$LName</td>
@@ -173,7 +181,7 @@ include('Database.php');
                     }
                 }
             }
-
+            
 
             /*
              * Old stuff: (directly from database, without json)
@@ -220,15 +228,38 @@ include('Database.php');
         <table id="availableTaxisTable">
             <thead>
             <tr>
-                <th>Driver</th>
                 <th>Brand</th>
                 <th>Licence plate</th>
                 <th>Price per km</th>
-
             </tr>
             </thead>
 
             <tbody>
+
+            <?php
+            $availableTaxis = callRESTApi('Taxi');
+
+            //In case of no available taxis we check:
+            if (is_array($availableTaxis))
+            {
+                foreach ($availableTaxis as $taxi) {
+                    //We note the necessary information:
+                    $brand = $taxi -> Brand;
+                    $licencePlate = $taxi -> License_plate;
+                    $pricePerKm = $taxi -> Price_per_km;
+
+                    echo "<tr>
+                        <td>$brand</td>
+                        <td>$licencePlate</td>
+                        <td>pricePerKm</td>
+                        </tr>";
+                }
+            }
+            ?>
+
+
+
+
             <tr>
                 <td>Hans Hansen</td>
                 <td>Suzuki</td>
