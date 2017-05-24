@@ -116,6 +116,7 @@ include('Database.php');
                 <th>Phone no</th>
                 <th>From address</th>
                 <th>To address</th>
+                <th>Time</th>
             </tr>
             </thead>
 
@@ -124,40 +125,92 @@ include('Database.php');
 
             <!--PHP-code for getting requests for request table:-->
             <?php
-            $Database = new Database();
 
-            $selectRequestsSql = "SELECT `FK_customer_ID`,`From_Location`, `To_Location` FROM `Request`";
-            $requests = $Database->doSelect($selectRequestsSql);
+            //We get the json-file containing all the requests:
+            $taxiRequests = file_get_contents('http://localhost:8080/RESTapi.php/Request');
+            //We need to decode the http-response so we can use and display it:
+            /**
+             * Note: by adding a second parameter, 'true' to the json_decode method we could get the json as an
+             * associative array, which would allow for a different way of extracting the data, but we choose
+             * to use the json as an object to make the code more readable, since we can just extract data using
+             * the column names
+             */
+            $taxiRequests = json_decode($taxiRequests);
 
-            if (is_array($requests))
+            //print_r($taxiRequests); // use for seeing the json object print
+
+
+            if (is_array($taxiRequests))
             {
-                //For each request we get the specific customer information and inputs it all into the table:
-                foreach ($requests as $request)
-                {
-                    //NOTE: the customer id has to be in its own variable; if '$request[...]' is just appended to the
-                    // select-statement, errors will happen, while just appending the variable seems to be okay...
-                    $customer_ID = $request["FK_customer_ID"];
-                    $selectCustomerSql = "SELECT `FName`,`LName`,`PhoneNb`,`Preferred_Brand` FROM `Customer` WHERE `Customer_ID` = " . $customer_ID;
-                    $customers = $Database->doSelect($selectCustomerSql);
+                foreach ($taxiRequests as $request) {
+                    //We note the necessary information:
+                    $customerID = $request -> FK_customer_ID;
+                    $fromAddress = $request -> From_Location;
+                    $toLocation = $request -> To_Location;
+                    $time = $request -> TimeStamp;
 
-                    //Note: we need to check that it is an array to avoid errors
-                    if (is_array($customers))
-                    {
-                        foreach ($customers as $customer)
-                        {
-                            //We input the request information in the html table:
-                            echo "<tr>
-                            <td>" . $customer["FName"] . "</td>
-                            <td>" . $customer["LName"] . "</td>
-                            <td>" . $customer["Preferred_Brand"] . "</td>
-                            <td>" . $customer["PhoneNb"] . "</td>
-                            <td>" . $request["From_Location"] . "</td>
-                            <td>" . $request["To_Location"] . "</td>s
-                            </tr>";
-                        }
+                    //We get the given customer and decode the response:
+                    $customer = file_get_contents('http://localhost:8080/RESTapi.php/Customer/'.$customerID);
+                    $customer = json_decode($customer);
+                    //print_r($customer);
+
+
+                    foreach ($customer as $thisCustomer){
+                        $FName = $thisCustomer -> FName;
+                        $LName = $thisCustomer -> LName;
+                        $PreferredBrand = $thisCustomer -> Preferred_Brand;
+                        $PhoneNb = $thisCustomer -> PhoneNb;
+
+                        echo "<tr>
+                        <td>$FName</td>
+                        <td>$LName</td>
+                        <td>$PreferredBrand</td>
+                        <td>$PhoneNb</td>
+                        <td>$fromAddress</td>
+                        <td>$toLocation</td>
+                        <td>$time</td>
+                        </tr>";
                     }
                 }
             }
+
+
+            /*
+             * Old stuff: (directly from database, without json)
+             if (is_array($response))
+             {
+                 $Database = new Database();
+
+                 $selectRequestsSql = "SELECT `FK_customer_ID`,`From_Location`, `To_Location` FROM `Request`";
+                 $requests = $Database->doSelect($selectRequestsSql);
+
+                 //For each request we get the specific customer information and inputs it all into the table:
+                 foreach ($requests as $request)
+                 {
+                     //NOTE: the customer id has to be in its own variable; if '$request[...]' is just appended to the
+                     // select-statement, errors will happen, while just appending the variable seems to be okay...
+                     $customer_ID = $request["FK_customer_ID"];
+                     $selectCustomerSql = "SELECT `FName`,`LName`,`PhoneNb`,`Preferred_Brand` FROM `Customer` WHERE `Customer_ID` = " . $customer_ID;
+                     $customers = $Database->doSelect($selectCustomerSql);
+
+                     //Note: we need to check that it is an array to avoid errors
+                     if (is_array($customers))
+                     {
+                         foreach ($customers as $customer)
+                         {
+                             //We input the request information in the html table:
+                             echo "<tr>
+                             <td>" . $customer["FName"] . "</td>
+                             <td>" . $customer["LName"] . "</td>
+                             <td>" . $customer["Preferred_Brand"] . "</td>
+                             <td>" . $customer["PhoneNb"] . "</td>
+                             <td>" . $request["From_Location"] . "</td>
+                             <td>" . $request["To_Location"] . "</td>s
+                             </tr>";
+                         }
+                     }
+                 }
+             }*/
             ?>
             </tbody>
 
