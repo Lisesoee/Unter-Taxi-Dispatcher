@@ -23,8 +23,8 @@ switch ($method)
 {
     case 'GET':
         //TODO: make sure this works: (is the key really null if its not set in the request? - else we will have an invisible error)
-        //If we dont specify ID, we get all instances:
-        if ($key === null){
+        //If there is no id, we get all instances:
+        if ($key == null){
             $sql = "SELECT * FROM `$table`";
         }
         else{
@@ -67,13 +67,28 @@ switch ($method)
 
 //Execute sql statement
 //If the method is getting multiple values we call doSelect:
-if ($method == 'GET' || $key == null){
+if ($method == 'GET'){
     $result = $Database -> doSelect($sql);
 }
 else{
     //Everything else just needs executing:
     $result = $Database -> doExecuteQuery($sql);
 }
+
+
+/**
+ * Old stuff backup
+ * TODO: remove or put back
+ * if ($method == 'GET' || $key != null){
+$result = $Database -> doSelect($sql);
+}
+else{
+//Everything else just needs executing:
+$result = $Database -> doExecuteQuery($sql);
+}
+ */
+
+
 
 //We set and encode the response
 $response = json_encode($result);
