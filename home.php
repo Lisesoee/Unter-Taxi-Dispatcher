@@ -244,16 +244,18 @@ include('Database.php');
             if (is_array($availableTaxis))
             {
                 foreach ($availableTaxis as $taxi) {
-                    //We note the necessary information:
-                    $brand = $taxi -> Brand;
-                    $licencePlate = $taxi -> License_plate;
-                    $pricePerKm = $taxi -> Price_per_km;
+                    if ($taxi -> isAvailable = true){
+                        //We note the necessary information:
+                        $brand = $taxi -> Brand;
+                        $licencePlate = $taxi -> License_plate;
+                        $pricePerKm = $taxi -> Price_per_km;
 
-                    echo "<tr>
+                        echo "<tr>
                         <td>$brand</td>
                         <td>$licencePlate</td>
                         <td>pricePerKm</td>
                         </tr>";
+                    }
                 }
             }
             ?>
