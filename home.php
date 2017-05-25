@@ -175,6 +175,7 @@ include('Database.php');
             {
                 foreach ($taxiRequests as $request) {
                     //We note the necessary information:
+                    $requestID = $request -> ID;
                     $customerID = $request -> FK_customer_ID;
                     $fromAddress = $request -> From_Location;
                     $toLocation = $request -> To_Location;
@@ -191,7 +192,7 @@ include('Database.php');
                         $PhoneNb = $thisCustomer -> PhoneNb;
 
                         //For each request with the given customer, we echo to the table:
-                        echo "<tr class = 'requestRow'>
+                        echo "<tr id = '$requestID' class = 'requestRow'>
                         <td>$FName</td>
                         <td>$LName</td>
                         <td>$PreferredBrand</td>
@@ -201,7 +202,7 @@ include('Database.php');
                         <td>$time</td>
                         </tr>";
                     }
-                }
+                } 
             }
             
 
@@ -269,11 +270,12 @@ include('Database.php');
                 foreach ($availableTaxis as $taxi) {
                     if ($taxi -> isAvailable = true){
                         //We note the necessary information:
+                        $taxiID = $taxi -> ID;
                         $brand = $taxi -> Brand;
                         $licencePlate = $taxi -> License_plate;
                         $pricePerKm = $taxi -> Price_per_km;
 
-                        echo "<tr class = 'taxiRow'>
+                        echo "<tr id = '$taxiID' class = 'taxiRow'>
                         <td>$brand</td>
                         <td>$licencePlate</td>
                         <td>$pricePerKm</td>
