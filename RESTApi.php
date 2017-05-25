@@ -51,7 +51,7 @@ switch ($method)
                 break;
 
             case 'Order':
-                $columns = "Estimated_Time, Estimated_payment";
+                $columns = "Estimated_Time, Estimated_payment, FK_Request_ID, FK_Taxi_ID";
                 break;
         }
         //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);

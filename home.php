@@ -49,25 +49,25 @@ include('Database.php');
             align-content: flex-start;
         }
 
-        /*Adding some nice look and feel to the table rows: */
+        /*Adding some nice look and feel to the table rows in general: */
         tr:nth-child(odd) {
             background-color: # #99ccff;
         }
-
         tr:nth-child(even) {
             background-color: # #b3daff;
         }
-
         tr:hover {
             background-color: #0066ff;
         }
+
 
         /*Makes sure that the table header doesn't light up on hover like the other table-rows*/
         th {
             background-color: #fff;
         }
 
-        .selected {
+        /*Selected row in both tables are coloured:*/
+        .selectedRequest, .selectedTaxi {
             background-color: #0066ff;
         }
 
@@ -75,14 +75,36 @@ include('Database.php');
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
         //This script adds functionality for selecting rows in the tables.
-        //The 'selected' class is coloured differently using CSS and will be used when dispatching a taxi to the selected requests
-        //TODO: restrict number of selections?
+        //The 'selected...' classes are coloured differently using CSS and will be used when dispatching the selected taxi to the selected requests
         $(document).ready(function () {
             $('table tr').click(function () {
-                if ($(this).attr('class') == 'selected') {
-                    $(this).removeClass('selected');
-                } else {
-                    $((this)).addClass('selected');
+
+                //----REQUEST TABLE----
+                //We check if its a request row:
+                if ($(this).hasClass('requestRow')){
+                    //If the request row is selected we unselect it:
+                    if ($(this).hasClass('selectedRequest')){
+                        $(this).removeClass('selectedRequest');
+                    }
+                    //Else, we add select to it:
+                    else{
+                        ($(this)).addClass('selectedRequest');
+                    }
+                }
+
+                //----AVAILABLE TAXIS TABLE----
+                //We check if its a taxi row:
+                if ($(this).hasClass('taxiRow')) {
+                    //If the row is selectet, we un-select it:
+                    if ($(this).hasClass('selectedTaxi')) {
+                        $(this).removeClass('selectedTaxi');
+                    }
+                    else {
+                        //First we remove all selections (none or one) in the table
+                        $('.selectedTaxi').removeClass('selectedTaxi');
+                        //Then we add the selection to the clicked row:
+                        ($(this)).addClass('selectedTaxi');
+                    }
                 }
             });
         });
@@ -134,7 +156,7 @@ include('Database.php');
              */
             function callRESTApi($params){
                 //We get the json-file containing all the requests:
-                $response = file_get_contents('http://localhost:8080/RESTapi.php/'.$params);
+                $response = file_get_contents('http://localhost:8080/RESTApi.php/'.$params);
 
                 /**
                  * We need to decode the http-response so we can use and display it:
@@ -169,7 +191,7 @@ include('Database.php');
                         $PhoneNb = $thisCustomer -> PhoneNb;
 
                         //For each request with the given customer, we echo to the table:
-                        echo "<tr>
+                        echo "<tr class = 'requestRow'>
                         <td>$FName</td>
                         <td>$LName</td>
                         <td>$PreferredBrand</td>
@@ -243,6 +265,7 @@ include('Database.php');
             //In case of no available taxis we check:
             if (is_array($availableTaxis))
             {
+                //For each taxi we print it if it is available:
                 foreach ($availableTaxis as $taxi) {
                     if ($taxi -> isAvailable = true){
                         //We note the necessary information:
@@ -250,10 +273,10 @@ include('Database.php');
                         $licencePlate = $taxi -> License_plate;
                         $pricePerKm = $taxi -> Price_per_km;
 
-                        echo "<tr>
+                        echo "<tr class = 'taxiRow'>
                         <td>$brand</td>
                         <td>$licencePlate</td>
-                        <td>pricePerKm</td>
+                        <td>$pricePerKm</td>
                         </tr>";
                     }
                 }
@@ -281,6 +304,19 @@ include('Database.php');
     <div class="flex-item">
         <button>
             Dispatch taxi
+
+            <?php
+            /**
+             * TODO:
+             * Take all request-rows with 'selected' class
+             * Take the taxi row with 'selected' class
+             * Post http-request to RESTApi with order information (time, payment, requestID, taxiID)
+             *
+             * NOTE: how do we get the ID's?
+             */
+
+            ?>
+
         </button>
     </div>
 
