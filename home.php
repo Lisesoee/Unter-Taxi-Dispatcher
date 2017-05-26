@@ -315,7 +315,37 @@ include('Database.php');
              * Post http-request to RESTApi with order information (time, payment, requestID, taxiID)
              *
              * NOTE: how do we get the ID's?
+             *
+             *
+             * for each selected request
+             *  --> post http with the given requestID and the taxiID if the chosen taxi
              */
+
+            $dom = new DOMDocument('1.0');
+            $classname = "selectedRequest";
+
+            @$dom->loadHTMLFile("http://shophive.com/".$query);
+            $nodes = array();
+            $nodes = $dom->getElementsByTagName("div");
+            foreach ($nodes as $element)
+            {
+                $classy = $element->getAttribute("class");
+                if (strpos($classy, "product")>0)
+                {
+                    echo $classy;
+                    echo '<br>';
+                }
+
+            }
+
+
+
+            $params = "_Order/7, 70, $requestID, $taxiID";
+            $taxiRequests = callRESTApi($params);
+
+
+
+
 
             ?>
 
