@@ -69,7 +69,12 @@ switch ($method) {
 
                 case 'Order':
                     $columns = "Estimated_Time, Estimated_payment, FK_Request_ID, FK_Taxi_ID";
-
+                    $estimated_Time = $decodedContent['Estimated_Time'];
+                    $estimated_Payment = $decodedContent['Estimated_payment'];
+                    $request_ID=$decodedContent['FK_Request_ID'];
+                    $taxi_ID=$decodedContent['FK_Taxi_ID'];
+                    $values= $estimated_Time.',\''.$estimated_Payment.'\',\''.$request_ID.'\',\''.$taxi_ID.'\'';
+                    echo $values;
                     break;
             }
 
