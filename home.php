@@ -156,7 +156,7 @@ include('Database.php');
              */
             function callRESTApi($params){
                 //We get the json-file containing all the requests:
-                $response = file_get_contents('http://localhost:8080/RESTApi.php/'.$params);
+                $response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
 
                 /**
                  * We need to decode the http-response so we can use and display it:
