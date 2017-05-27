@@ -5,7 +5,7 @@
  * Date: 16-05-2017
  * Time: 14:43
  */
-include('Database.php');
+//include('Database.php');
 
 
 ?>
@@ -108,6 +108,55 @@ include('Database.php');
                 }
             });
         });
+    </script>
+
+    <script>
+        /**
+         * TODO:
+         * Take all request-rows with 'selected' class
+         * Take the taxi row with 'selected' class
+         * Post http-request to RESTApi with order information (time, payment, requestID, taxiID)
+         *
+         * NOTE: how do we get the ID's?
+         *
+         *
+         * for each selected request
+         *  --> post http with the given requestID and the taxiID if the chosen taxi
+         */
+
+
+        //when button is clicked:
+        $( "#dispatchButton" ).click(function() {
+            //We get the selected taxi:
+            var selectedTaxii = $('.selectedTaxi');
+
+            //We select all the selected requests:
+            var selectedRequests = $('.selectedRequest');
+
+            //For each request, we dispatch the taxi by posting an order to the database:
+            //TODO: set the ids in the json to be posted
+            var currentRequest = [{ "time": "10",
+                "payment": "100",
+                "requestID": "5",
+                "taxiID": "5"}];
+
+            $.ajax({
+                url: 'http://360itsolutions.dk/RESTApi.php/Order',
+                type: "POST",
+                data: JSON.stringify(currentRequest),
+                processData: false,
+                contentType: "application/json; charset=UTF-8",
+
+                /*Dont know what this is:
+                dataType: "json",
+                 success: function(data){alert(data);},
+                 failure: function(errMsg) {
+                 alert(errMsg);*/
+
+                complete: callback
+            });
+        }
+
     </script>
 
 </head>
@@ -299,12 +348,58 @@ include('Database.php');
 <div class="flex-container" id="bottomBar">
     <div class="flex-item">
         <label>
+            <button id="dispatchButton">
+                Dispatch taxi
+
+                <?php
+                /**
+                 * TODO:
+                 * Take all request-rows with 'selected' class
+                 * Take the taxi row with 'selected' class
+                 * Post http-request to RESTApi with order information (time, payment, requestID, taxiID)
+                 *
+                 * NOTE: how do we get the ID's?
+                 *
+                 *
+                 * for each selected request
+                 *  --> post http with the given requestID and the taxiID if the chosen taxi
+                 */
+
+                $dom = new DOMDocument('1.0');
+                $classname = "selectedRequest";
+
+                @$dom->loadHTMLFile("http://shophive.com/".$query);
+                $nodes = array();
+                $nodes = $dom->getElementsByTagName("div");
+                foreach ($nodes as $element)
+                {
+                    $classy = $element->getAttribute("class");
+                    if (strpos($classy, "product")>0)
+                    {
+                        echo $classy;
+                        echo '<br>';
+                    }
+
+                }
+
+
+
+                $params = "_Order/7, 70, $requestID, $taxiID";
+                $taxiRequests = callRESTApi($params);
+
+
+
+
+
+                ?>
+
+            </button>
             Share mode is OFF
         </label>
     </div>
 
     <div class="flex-item">
-        <button>
+        <button id="dispatchButton">
             Dispatch taxi
 
             <?php
