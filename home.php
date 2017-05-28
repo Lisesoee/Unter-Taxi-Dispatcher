@@ -120,7 +120,6 @@
          *
          * NOTE: how do we get the ID's?
          *
-         *
          * for each selected request
          *  --> post http with the given requestID and the taxiID if the chosen taxi
          */
@@ -129,38 +128,60 @@
 
             //When button is clicked:
             $("#dispatchButton").click(function () {
+
+                /*
                 //We get the selected taxi:
                 var selectedTaxii = $('.selectedTaxi');
 
                 //We select all the selected requests:
                 var selectedRequests = $('.selectedRequest');
-
-                //For each request, we dispatch the taxi by posting an order to the database:
-                //TODO: set the ids in the json to be posted
-                var currentRequest = {
-                    "Estimated_Time": "10",
-                    "Estimated_Payment": "some payment",
-                    "FK_Request_ID": "5",
-                    "FK_Taxi_ID": "5"
-                };
+                */
 
 
-                //TODO: set the URL to the webserver RESTApis url.
-                //TODO: But first, change the webservers code to have '_Order' instead of 'Order' and 'Estimated_Payment'
-                //TODO: insted of 'Estimated_payment' since this causes errors.
-                //TODO: -> E.G: TAKE THE MODIFIED VERSION THAT WORKS AND OVERWHRITE THE VERSION ON THE WEBSERVER!
-                //TODO: - This way we are sure that we got every single place, since I had to do a lot if debugging to find all the places where stuff was wrong.
 
-                //We send a HTTP request to the RESTApi with the order information:
-                $.ajax({
-                    //url: 'http://360itsolutions.dk/RESTApi.php/_Order',
-                    url: 'http://localhost:8080/RESTApi.php/_Order',
-                    type: "POST",
-                    data: JSON.stringify(currentRequest),
-                    processData: false,
-                    success: function (data, textStatus, jqXHR) {console.log(data);},
-                    error: function (jqXHR, textStatus, errorThrown) {console.log("An error occurred: " + errorThrown);}
-                });
+                //I set defaut params for debugging reasons:
+                var selectedTaxiID = 1;
+                var currentSelectedRequestID = 1;
+
+
+                //We set the taxiID, getting it from a loop since I believe selecting element by class returns an array (?)
+                $('.selectedTaxi').each(function(){
+                    //selectedTaxiID = $(this).attr('id');
+                    var selectedTaxiID = $(this).id;
+                })
+
+                //For each selected request, we dispatch the taxi by posting an order to the database:
+                $('.selectedRequest').each(function(){
+                    //currentSelectedRequestID = $(this).attr('id');
+                    var currentSelectedRequestID = $(this).id;
+
+                    //TODO: set the ids in the json to be posted
+                    var currentRequest = {
+                        "Estimated_Time": "10",
+                        "Estimated_Payment": "some payment",
+                        "FK_Request_ID": currentSelectedRequestID,
+                        "FK_Taxi_ID": selectedTaxiID
+                    };
+
+                    //TODO: set the URL to the webserver RESTApis url.
+                    //TODO: But first, change the webservers code to have '_Order' instead of 'Order' and 'Estimated_Payment'
+                    //TODO: insted of 'Estimated_payment' since this causes errors.
+                    //TODO: -> E.G: TAKE THE MODIFIED VERSION THAT WORKS AND OVERWHRITE THE VERSION ON THE WEBSERVER!
+                    //TODO: - This way we are sure that we got every single place, since I had to do a lot if debugging to find all the places where stuff was wrong.
+
+                    //We send a HTTP request to the RESTApi with the order information:
+                    $.ajax({
+                        //url: 'http://360itsolutions.dk/RESTApi.php/_Order',
+                        url: 'http://localhost:8080/RESTApi.php/_Order',
+                        type: "POST",
+                        data: JSON.stringify(currentRequest),
+                        processData: false,
+                        success: function (data, textStatus, jqXHR) {console.log(data);},
+                        error: function (jqXHR, textStatus, errorThrown) {console.log("An error occurred: " + errorThrown);}
+                    });
+
+                })
+
             });
         });
 
