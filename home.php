@@ -5,11 +5,9 @@
  * Date: 16-05-2017
  * Time: 14:43
  */
-//include('Database.php');
-
 
 ?>
-
+<!DOCTYPE html>
 <html>
 <head>
     <style>
@@ -53,13 +51,14 @@
         tr:nth-child(odd) {
             background-color: # #99ccff;
         }
+
         tr:nth-child(even) {
             background-color: # #b3daff;
         }
+
         tr:hover {
             background-color: #0066ff;
         }
-
 
         /*Makes sure that the table header doesn't light up on hover like the other table-rows*/
         th {
@@ -81,13 +80,13 @@
 
                 //----REQUEST TABLE----
                 //We check if its a request row:
-                if ($(this).hasClass('requestRow')){
+                if ($(this).hasClass('requestRow')) {
                     //If the request row is selected we unselect it:
-                    if ($(this).hasClass('selectedRequest')){
+                    if ($(this).hasClass('selectedRequest')) {
                         $(this).removeClass('selectedRequest');
                     }
                     //Else, we add select to it:
-                    else{
+                    else {
                         ($(this)).addClass('selectedRequest');
                     }
                 }
@@ -119,43 +118,69 @@
          *
          * NOTE: how do we get the ID's?
          *
-         *
          * for each selected request
          *  --> post http with the given requestID and the taxiID if the chosen taxi
          */
 
+        $(document).ready(function () {
 
-        //when button is clicked:
-        $( "#dispatchButton" ).click(function() {
-            //We get the selected taxi:
-            var selectedTaxii = $('.selectedTaxi');
+            //When button is clicked:
+            $("#dispatchButton").click(function () {
 
-            //We select all the selected requests:
-            var selectedRequests = $('.selectedRequest');
+                /*
+                //We get the selected taxi:
+                var selectedTaxii = $('.selectedTaxi');
 
-            //For each request, we dispatch the taxi by posting an order to the database:
-            //TODO: set the ids in the json to be posted
-            var currentRequest = [{ "time": "10",
-                "payment": "100",
-                "requestID": "5",
-                "taxiID": "5"}];
+                //We select all the selected requests:
+                var selectedRequests = $('.selectedRequest');
+                */
 
-            $.ajax({
-                url: 'http://360itsolutions.dk/RESTApi.php/Order',
-                type: "POST",
-                data: JSON.stringify(currentRequest),
-                processData: false,
-                contentType: "application/json; charset=UTF-8",
 
-                /*Dont know what this is:
-                dataType: "json",
-                 success: function(data){alert(data);},
-                 failure: function(errMsg) {
-                 alert(errMsg);*/
+                //I set defaut params for debugging reasons:
+                var selectedTaxiID = 3;
+                var currentSelectedRequestID = 3;
 
-                complete: callback
+
+                //We set the taxiID, getting it from a loop since I believe selecting element by class returns an array (?)
+                $('.selectedTaxi').each(function(){
+                    selectedTaxiID = this.id;
+
+                    //For each selected request, we dispatch the taxi by posting an order to the database:
+                    $('.selectedRequest').each(function(){
+                        currentSelectedRequestID = this.id;
+
+                        //TODO: set the ids in the json to be posted
+                        var currentRequest = {
+                            "Estimated_Time": "5",
+                            "Estimated_Payment": "some new payment",
+                            "FK_Request_ID": currentSelectedRequestID,
+                            "FK_Taxi_ID": selectedTaxiID
+                        };
+
+                        //TODO: set the URL to the webserver RESTApis url.
+                        //TODO: But first, change the webservers code to have '_Order' instead of 'Order' and 'Estimated_Payment'
+                        //TODO: insted of 'Estimated_payment' since this causes errors.
+                        //TODO: -> E.G: TAKE THE MODIFIED VERSION THAT WORKS AND OVERWHRITE THE VERSION ON THE WEBSERVER!
+                        //TODO: - This way we are sure that we got every single place, since I had to do a lot if debugging to find all the places where stuff was wrong.
+
+                        //We send a HTTP request to the RESTApi with the order information:
+                        $.ajax({
+                            //url: 'http://360itsolutions.dk/RESTApi.php/_Order',
+                            url: 'http://localhost:8080/RESTApi.php/_Order',
+                            type: "POST",
+                            data: JSON.stringify(currentRequest),
+                            processData: false,
+                            success: function (data, textStatus, jqXHR) {console.log(data);},
+                            error: function (jqXHR, textStatus, errorThrown) {console.log("An error occurred: " + errorThrown);}
+                        });
+
+                    })
+                })
+
+
+
             });
-        }
+        });
 
     </script>
 
@@ -200,12 +225,15 @@
             /**
              * This function calls the RESTApi to place a HTTP request and do a CRUD function in the database
              *
-             * @param $params: the parameters for specific operations
+             * @param $params : the parameters for specific operations
              * @return bool|mixed|string: returns the decoded response from the RESTApi
              */
-            function callRESTApi($params){
+            function callRESTApi($params)
+            {
+
                 //We get the json-file containing all the requests:
-                $response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
+                //$response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
+                $response = file_get_contents('http://localhost:8080/RESTApi.php/' . $params);
 
                 /**
                  * We need to decode the http-response so we can use and display it:
@@ -218,27 +246,25 @@
                 return $response;
             }
 
-
             $taxiRequests = callRESTApi('Request');
-            if (is_array($taxiRequests))
-            {
+            if (is_array($taxiRequests)) {
                 foreach ($taxiRequests as $request) {
                     //We note the necessary information:
-                    $requestID = $request -> ID;
-                    $customerID = $request -> FK_customer_ID;
-                    $fromAddress = $request -> From_Location;
-                    $toLocation = $request -> To_Location;
-                    $time = $request -> TimeStamp;
+                    $requestID = $request->ID;
+                    $customerID = $request->FK_customer_ID;
+                    $fromAddress = $request->From_Location;
+                    $toLocation = $request->To_Location;
+                    $time = $request->TimeStamp;
 
                     //We get the given customer and decode the response:
-                    $customer = callRESTApi('Customer/'.$customerID);
+                    $customer = callRESTApi('Customer/' . $customerID);
 
                     //Even though its only one customer, we still loop the array:
-                    foreach ($customer as $thisCustomer){
-                        $FName = $thisCustomer -> FName;
-                        $LName = $thisCustomer -> LName;
-                        $PreferredBrand = $thisCustomer -> Preferred_Brand;
-                        $PhoneNb = $thisCustomer -> PhoneNb;
+                    foreach ($customer as $thisCustomer) {
+                        $FName = $thisCustomer->FName;
+                        $LName = $thisCustomer->LName;
+                        $PreferredBrand = $thisCustomer->Preferred_Brand;
+                        $PhoneNb = $thisCustomer->PhoneNb;
 
                         //For each request with the given customer, we echo to the table:
                         echo "<tr id = '$requestID' class = 'requestRow'>
@@ -251,10 +277,8 @@
                         <td>$time</td>
                         </tr>";
                     }
-                } 
+                }
             }
-            
-
             /*
              * Old stuff: (directly from database, without json)
              if (is_array($response))
@@ -313,16 +337,15 @@
             $availableTaxis = callRESTApi('Taxi');
 
             //In case of no available taxis we check:
-            if (is_array($availableTaxis))
-            {
+            if (is_array($availableTaxis)) {
                 //For each taxi we print it if it is available:
                 foreach ($availableTaxis as $taxi) {
-                    if ($taxi -> isAvailable = true){
+                    if ($taxi->isAvailable = true) {
                         //We note the necessary information:
-                        $taxiID = $taxi -> ID;
-                        $brand = $taxi -> Brand;
-                        $licencePlate = $taxi -> License_plate;
-                        $pricePerKm = $taxi -> Price_per_km;
+                        $taxiID = $taxi->ID;
+                        $brand = $taxi->Brand;
+                        $licencePlate = $taxi->License_plate;
+                        $pricePerKm = $taxi->Price_per_km;
 
                         echo "<tr id = '$taxiID' class = 'taxiRow'>
                         <td>$brand</td>
@@ -348,52 +371,6 @@
 <div class="flex-container" id="bottomBar">
     <div class="flex-item">
         <label>
-            <button id="dispatchButton">
-                Dispatch taxi
-
-                <?php
-                /**
-                 * TODO:
-                 * Take all request-rows with 'selected' class
-                 * Take the taxi row with 'selected' class
-                 * Post http-request to RESTApi with order information (time, payment, requestID, taxiID)
-                 *
-                 * NOTE: how do we get the ID's?
-                 *
-                 *
-                 * for each selected request
-                 *  --> post http with the given requestID and the taxiID if the chosen taxi
-                 */
-
-                $dom = new DOMDocument('1.0');
-                $classname = "selectedRequest";
-
-                @$dom->loadHTMLFile("http://shophive.com/".$query);
-                $nodes = array();
-                $nodes = $dom->getElementsByTagName("div");
-                foreach ($nodes as $element)
-                {
-                    $classy = $element->getAttribute("class");
-                    if (strpos($classy, "product")>0)
-                    {
-                        echo $classy;
-                        echo '<br>';
-                    }
-
-                }
-
-
-
-                $params = "_Order/7, 70, $requestID, $taxiID";
-                $taxiRequests = callRESTApi($params);
-
-
-
-
-
-                ?>
-
-            </button>
             Share mode is OFF
         </label>
     </div>
@@ -401,55 +378,10 @@
     <div class="flex-item">
         <button id="dispatchButton">
             Dispatch taxi
-
-            <?php
-            /**
-             * TODO:
-             * Take all request-rows with 'selected' class
-             * Take the taxi row with 'selected' class
-             * Post http-request to RESTApi with order information (time, payment, requestID, taxiID)
-             *
-             * NOTE: how do we get the ID's?
-             *
-             *
-             * for each selected request
-             *  --> post http with the given requestID and the taxiID if the chosen taxi
-             */
-
-            $dom = new DOMDocument('1.0');
-            $classname = "selectedRequest";
-
-            @$dom->loadHTMLFile("http://shophive.com/".$query);
-            $nodes = array();
-            $nodes = $dom->getElementsByTagName("div");
-            foreach ($nodes as $element)
-            {
-                $classy = $element->getAttribute("class");
-                if (strpos($classy, "product")>0)
-                {
-                    echo $classy;
-                    echo '<br>';
-                }
-
-            }
-
-
-
-            $params = "_Order/7, 70, $requestID, $taxiID";
-            $taxiRequests = callRESTApi($params);
-
-
-
-
-
-            ?>
-
         </button>
     </div>
 
-
 </div>
-
 
 </body>
 
