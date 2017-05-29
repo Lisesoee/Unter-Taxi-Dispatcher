@@ -127,21 +127,7 @@
             //When button is clicked:
             $("#dispatchButton").click(function () {
 
-                /*
-                //We get the selected taxi:
-                var selectedTaxii = $('.selectedTaxi');
-
-                //We select all the selected requests:
-                var selectedRequests = $('.selectedRequest');
-                */
-
-
-                //I set defaut params for debugging reasons:
-                var selectedTaxiID = 3;
-                var currentSelectedRequestID = 3;
-
-
-                //We set the taxiID, getting it from a loop since I believe selecting element by class returns an array (?)
+                //We set the taxiID
                 $('.selectedTaxi').each(function(){
                     selectedTaxiID = this.id;
 
@@ -149,7 +135,6 @@
                     $('.selectedRequest').each(function(){
                         currentSelectedRequestID = this.id;
 
-                        //TODO: set the ids in the json to be posted
                         var currentRequest = {
                             "Estimated_Time": "5",
                             "Estimated_Payment": "some new payment",
