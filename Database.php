@@ -99,12 +99,4 @@ class Database{
         return "'" . $connection -> real_escape_string($value) . "'";
     }
 
-    /**
-     * returns the last id inserted in the last query executed
-     * @return int|string
-     */
-    public function  getLastID(){
-        $connection =$this->connect();
-        return mysqli_insert_id($connection);
-    }
 }
