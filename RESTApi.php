@@ -64,8 +64,54 @@ switch ($method) {
                     break;
 
                 case 'Customer':
-                    $columns = "FName, LName, PhoneNb, Preferred_Brand";
-                    //$fName =
+                    $columns = "FName, LName, PhoneNb, Preferred_Brand, FK_Credentials_ID";
+
+                    $credentials= $decodedContent["Credentials"];
+                    $customer = $decodedContent["Customer"];
+
+
+                    $credentials = json_encode($credentials);
+                    $ch  = curl_init('http://localhost/RESTApi.php/Credentials/');
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $credentials);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+                    $result= curl_exec($ch);
+                    echo $result;
+                    curl_close($ch);
+
+                    //TODO: get ID from database from inserted credentials:
+                    //TODO; run query to the dtabase and set it:
+                    $instertedCred_ID = 31;
+
+
+                    $firstName = $customer['FName'];
+                    $lastName = $customer['LName'];
+                    $phoneNb = $customer['PhoneNb'];
+                    $preferredBrand = $customer['Preferred_Brand'];
+
+
+
+                  //  echo $firstName.$lastName.$username.$password;
+
+                    $values =  '\''.$firstName.'\',\''.$lastName.'\',\''.$phoneNb.'\',\''.$preferredBrand.'\','.$instertedCred_ID;
+
+                    echo $values;
+
+
+
+                    break;
+
+                case 'Credentials':
+                    $columns = "Email, Username, Password";
+
+                    $email = $decodedContent['Email'];
+                    $username = $decodedContent['Username'];
+                    $password = $decodedContent['Password'];
+
+                    $values =  '\''.$email.'\',\''.$username.'\',\''.$password.'\'';
+                    echo $values;
+
 
                     break;
 
@@ -111,6 +157,18 @@ if ($method == 'GET') {
 //We set and encode the response
 $response = json_encode($result);
 echo $response;
+
+
+function postCredentialsForCustomer($credentials){
+    $email = $credentials['Email'];
+    $username = $credentials['Username'];
+    $password = $credentials['Password'];
+
+    $credColumns = "Email, Username, Password";
+
+    $sql = "INSERT INTO `Credentials` ($credColumns) VALUES ()";
+
+}
 
 
 
