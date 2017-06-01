@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: LiseMusen
+ * User: LiseMusen & Rayan El Hajj
  * Date: 22-05-2017
  * Time: 14:29
  */
@@ -53,8 +53,8 @@ switch ($method) {
 
             //We use a switch to set the appropriate columns for the given table:
             switch ($table) {
-                case 'Request':
-                    $columns = "FK_Customer_ID, From_Location, To_Location";
+                case 'request':
+                    $columns = "FK_customer_ID, From_Location, To_Location";
                     $customer_ID = $decodedContent['FK_Customer_ID'];
                     $from_Location = $decodedContent['From_Location'];
                     $to_Location = $decodedContent['To_Location'];
@@ -63,7 +63,7 @@ switch ($method) {
                     echo $values;
                     break;
 
-                case 'Customer':
+                case '_customer':
                     $columns = "FName, LName, PhoneNb, Preferred_Brand, FK_Credentials_ID";
 
                     $credentials= $decodedContent["Credentials"];
@@ -102,7 +102,7 @@ switch ($method) {
 
                     break;
 
-                case 'Credentials':
+                case 'credentials':
                     $columns = "Email, Username, Password";
 
                     $email = $decodedContent['Email'];
@@ -115,7 +115,7 @@ switch ($method) {
 
                     break;
 
-                case '_Order':
+                case '_order':
                     $columns = "Estimated_Time, Estimated_Payment, FK_Request_ID, FK_Taxi_ID";
                     $estimated_Time = $decodedContent['Estimated_Time'];
                     $estimated_Payment = $decodedContent['Estimated_Payment'];
