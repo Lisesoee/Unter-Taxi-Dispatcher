@@ -231,7 +231,7 @@
                 return $response;
             }
 
-            $taxiRequests = callRESTApi('Request');
+            $taxiRequests = callRESTApi('request');
             if (is_array($taxiRequests)) {
                 foreach ($taxiRequests as $request) {
                     //We note the necessary information:
@@ -242,7 +242,7 @@
                     $time = $request->TimeStamp;
 
                     //We get the given customer and decode the response:
-                    $customer = callRESTApi('Customer/' . $customerID);
+                    $customer = callRESTApi('customer/' . $customerID);
 
                     //Even though its only one customer, we still loop the array:
                     foreach ($customer as $thisCustomer) {

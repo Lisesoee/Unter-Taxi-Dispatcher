@@ -47,7 +47,7 @@ switch ($method) {
         break;
 
     case 'POST':
-        $decodedContent = json_decode($content,true);
+        $decodedContent = json_decode($content, true);
 
         if (is_array($decodedContent)) {
 
@@ -59,45 +59,43 @@ switch ($method) {
                     $from_Location = $decodedContent['From_Location'];
                     $to_Location = $decodedContent['To_Location'];
 
-                    $values =  $customer_ID.',\''.$from_Location.'\',\''.$to_Location.'\'';
+                    $values = $customer_ID . ',\'' . $from_Location . '\',\'' . $to_Location . '\'';
                     echo $values;
                     break;
 
                 case '_customer':
                     $columns = "FName, LName, PhoneNb, Preferred_Brand, FK_Credentials_ID";
 
-                    $credentials= $decodedContent["Credentials"];
+                    $credentials = $decodedContent["Credentials"];
                     $customer = $decodedContent["Customer"];
 
 
                     $credentials = json_encode($credentials);
-                    $ch  = curl_init('http://localhost/RESTApi.php/Credentials/');
+                    $ch = curl_init('http://localhost/RESTApi.php/credentials/');
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $credentials);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-                    $result= curl_exec($ch);
+                    $result = curl_exec($ch);
                     echo $result;
                     curl_close($ch);
 
-                    //TODO: get ID from database from inserted credentials:
-                    //TODO; run query to the dtabase and set it:
-                    $instertedCred_ID = 31;
+                    $select_cred_sql = "SELECT * FROM `credentials` WHERE ID=(SELECT MAX(ID) FROM `credentials`);";
 
+                    $insertedCred_ID = $Database->doSelect($select_cred_sql);
+
+                    foreach ($insertedCred_ID as $item) {
+                        $FK_Credentials_ID = $item['ID'];
+                    }
 
                     $firstName = $customer['FName'];
                     $lastName = $customer['LName'];
                     $phoneNb = $customer['PhoneNb'];
                     $preferredBrand = $customer['Preferred_Brand'];
 
-
-
-                  //  echo $firstName.$lastName.$username.$password;
-
-                    $values =  '\''.$firstName.'\',\''.$lastName.'\',\''.$phoneNb.'\',\''.$preferredBrand.'\','.$instertedCred_ID;
+                    $values = '\'' . $firstName . '\',\'' . $lastName . '\',\'' . $phoneNb . '\',\'' . $preferredBrand . '\',' . $FK_Credentials_ID;
 
                     echo $values;
-
 
 
                     break;
@@ -109,7 +107,7 @@ switch ($method) {
                     $username = $decodedContent['Username'];
                     $password = $decodedContent['Password'];
 
-                    $values =  '\''.$email.'\',\''.$username.'\',\''.$password.'\'';
+                    $values = '\'' . $email . '\',\'' . $username . '\',\'' . $password . '\'';
                     echo $values;
 
 
@@ -119,11 +117,11 @@ switch ($method) {
                     $columns = "Estimated_Time, Estimated_Payment, FK_Request_ID, FK_Taxi_ID";
                     $estimated_Time = $decodedContent['Estimated_Time'];
                     $estimated_Payment = $decodedContent['Estimated_Payment'];
-                    $request_ID=$decodedContent['FK_Request_ID'];
-                    $taxi_ID=$decodedContent['FK_Taxi_ID'];
+                    $request_ID = $decodedContent['FK_Request_ID'];
+                    $taxi_ID = $decodedContent['FK_Taxi_ID'];
 
 //                    $values= $estimated_Time.',\''.$estimated_Payment.'\',\''.$request_ID.'\',\''.$taxi_ID.'\'';
-                    $values= $estimated_Time.',\''.$estimated_Payment.'\','.$request_ID.','.$taxi_ID;
+                    $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     echo $values;
                     break;
             }
@@ -133,7 +131,7 @@ switch ($method) {
             $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
 
             echo $sql;
-        }else{
+        } else {
             echo "Incorrect json input: must be an array"; //prompting the error
         }
 
@@ -159,15 +157,20 @@ $response = json_encode($result);
 echo $response;
 
 
-function postCredentialsForCustomer($credentials){
-    $email = $credentials['Email'];
-    $username = $credentials['Username'];
-    $password = $credentials['Password'];
-
-    $credColumns = "Email, Username, Password";
-
-    $sql = "INSERT INTO `Credentials` ($credColumns) VALUES ()";
-
+/**
+ * creates mail content
+ * sends an email to newly registered customer to confirm the registration
+ * @param $emailAdd
+ * @param $username
+ */
+function sendConfirmationEmail($emailAdd, $username)
+{
+    $mailContent = "Dear" . $username . "\n" .
+        "you are successfully registered in the Unter Taxi Application" . "\n" .
+        "Kind regards" . "\n" . "Unter Taxi Application Developers' team";
+    $fromAddress = "From: notruth500@gmail.com";
+    $subject = "Confirmation for Registration";
+    mail($emailAdd, $subject, $mailContent, $fromAddress);
 }
 
 
