@@ -50,7 +50,6 @@ switch ($method) {
         $decodedContent = json_decode($content, true);
 
         if (is_array($decodedContent)) {
-
             //We use a switch to set the appropriate columns for the given table:
             switch ($table) {
                 case 'request':
@@ -60,7 +59,7 @@ switch ($method) {
                     $to_Location = $decodedContent['To_Location'];
 
                     $values = $customer_ID . ',\'' . $from_Location . '\',\'' . $to_Location . '\'';
-                    echo $values;
+                    //echo $values;
                     break;
 
                 case '_customer':
@@ -77,7 +76,7 @@ switch ($method) {
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
                     $result = curl_exec($ch);
-                    echo $result;
+                    //echo $result;
                     curl_close($ch);
 
                     $select_cred_sql = "SELECT * FROM `credentials` WHERE ID=(SELECT MAX(ID) FROM `credentials`);";
@@ -95,8 +94,7 @@ switch ($method) {
 
                     $values = '\'' . $firstName . '\',\'' . $lastName . '\',\'' . $phoneNb . '\',\'' . $preferredBrand . '\',' . $FK_Credentials_ID;
 
-                    echo $values;
-
+                    //echo $values; //for debugging purposes
 
                     break;
 
@@ -108,7 +106,7 @@ switch ($method) {
                     $password = $decodedContent['Password'];
 
                     $values = '\'' . $email . '\',\'' . $username . '\',\'' . $password . '\'';
-                    echo $values;
+                    //echo $values; //for debugging purposes
 
 
                     break;
@@ -120,9 +118,9 @@ switch ($method) {
                     $request_ID = $decodedContent['FK_Request_ID'];
                     $taxi_ID = $decodedContent['FK_Taxi_ID'];
 
-//                    $values= $estimated_Time.',\''.$estimated_Payment.'\',\''.$request_ID.'\',\''.$taxi_ID.'\'';
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
-                    echo $values;
+                    //echo $values; //for debugging purposes
+
                     break;
             }
 
@@ -130,11 +128,11 @@ switch ($method) {
             //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
             $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
 
-            echo $sql;
+
+            //echo $sql; //for debugging purposes
         } else {
             echo "Incorrect json input: must be an array"; //prompting the error
         }
-
         break;
 
     case 'DELETE':
@@ -147,7 +145,7 @@ switch ($method) {
 //Execute sql statement
 if ($method == 'GET') {
     $result = $Database->doSelect($sql);
-} else {
+} else if ($method != 'GET') {
     $result = $Database->doExecuteQuery($sql);
 }
 
@@ -157,21 +155,7 @@ $response = json_encode($result);
 echo $response;
 
 
-/**
- * creates mail content
- * sends an email to newly registered customer to confirm the registration
- * @param $emailAdd
- * @param $username
- */
-function sendConfirmationEmail($emailAdd, $username)
-{
-    $mailContent = "Dear" . $username . "\n" .
-        "you are successfully registered in the Unter Taxi Application" . "\n" .
-        "Kind regards" . "\n" . "Unter Taxi Application Developers' team";
-    $fromAddress = "From: notruth500@gmail.com";
-    $subject = "Confirmation for Registration";
-    mail($emailAdd, $subject, $mailContent, $fromAddress);
-}
+
 
 
 
