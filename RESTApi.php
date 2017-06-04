@@ -99,6 +99,14 @@ switch ($method) {
                     break;
 
                 case 'credentials':
+
+                    if($key=='validation'){
+                        $username= $decodedContent['Username'];
+                        $password = $decodedContent['Password'];
+                        $validation_sql = 'SELECT * FROM `credentials` WHERE Username='.'\''.$username.'\' AND Password=\''. $password .'\'';
+                        $result = $Database->doSelect($validation_sql);
+                    }else{
+
                     $columns = "Email, Username, Password";
 
                     $email = $decodedContent['Email'];
@@ -107,7 +115,7 @@ switch ($method) {
 
                     $values = '\'' . $email . '\',\'' . $username . '\',\'' . $password . '\'';
                     //echo $values; //for debugging purposes
-
+                    }
 
                     break;
 
@@ -124,10 +132,10 @@ switch ($method) {
                     break;
             }
 
-
-            //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
-            $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
-
+            if($key!='validation') {
+                //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
+                $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
+            }
 
             //echo $sql; //for debugging purposes
         } else {
@@ -143,9 +151,9 @@ switch ($method) {
 }
 
 //Execute sql statement
-if ($method == 'GET') {
+if ($method == 'GET' && $key!='validation') {
     $result = $Database->doSelect($sql);
-} else if ($method != 'GET') {
+} else if ($method != 'GET' && $key!='validation') {
     $result = $Database->doExecuteQuery($sql);
 }
 
