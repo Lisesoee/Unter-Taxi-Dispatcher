@@ -98,4 +98,5 @@ class Database{
         $connection = $this -> connect();
         return "'" . $connection -> real_escape_string($value) . "'";
     }
+
 }
