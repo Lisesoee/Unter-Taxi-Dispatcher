@@ -10,14 +10,31 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+
     <style>
+        html {
+            background-color: #ffff00
+
+        }
         header {
             text-align: center;
             padding: 2%
         }
 
         footer {
-            position: absolute;
+            position: relative;
             right: 0;
             bottom: 0;
             left: 0;
@@ -176,19 +193,34 @@
     <img src="images/taxi.png" alt="taxi picture" style="width:150px;height:99px;"/>
 </header>
 
-<nav>
-    //TODO: add navigation bar with home page. (Good design and allows for easy changes further on)
+<nav class="navbar navbar-default">
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Unter Dispatcher</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#">Page 1</a></li>
+                <li><a href="#">Page 2</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            </ul>
+        </div>
+    </nav>
 </nav>
 
 <body>
 
 <!--Tables: -->
-<div class="flex-container" id="tableSection">
+<div class="flex-container"  id="tableSection">
     <div class="flex-item">
         <!--Table comments:
         We use thead-tag to make column header look special.
         When using this, all tr-tags needs to be in a tbody-tag.-->
-        <table id="requestTable">
+        <table id="requestTable" class = "table-condensed">
             <thead>
             <tr>
                 <th>First name</th>
@@ -231,7 +263,7 @@
                 return $response;
             }
 
-            $taxiRequests = callRESTApi('Request');
+            $taxiRequests = callRESTApi('request');
             if (is_array($taxiRequests)) {
                 foreach ($taxiRequests as $request) {
                     //We note the necessary information:
@@ -242,7 +274,7 @@
                     $time = $request->TimeStamp;
 
                     //We get the given customer and decode the response:
-                    $customer = callRESTApi('Customer/' . $customerID);
+                    $customer = callRESTApi('_customer/' . $customerID);
 
                     //Even though its only one customer, we still loop the array:
                     foreach ($customer as $thisCustomer) {
@@ -264,49 +296,13 @@
                     }
                 }
             }
-            /*
-             * Old stuff: (directly from database, without json)
-             if (is_array($response))
-             {
-                 $Database = new Database();
-
-                 $selectRequestsSql = "SELECT `FK_customer_ID`,`From_Location`, `To_Location` FROM `Request`";
-                 $requests = $Database->doSelect($selectRequestsSql);
-
-                 //For each request we get the specific customer information and inputs it all into the table:
-                 foreach ($requests as $request)
-                 {
-                     //NOTE: the customer id has to be in its own variable; if '$request[...]' is just appended to the
-                     // select-statement, errors will happen, while just appending the variable seems to be okay...
-                     $customer_ID = $request["FK_customer_ID"];
-                     $selectCustomerSql = "SELECT `FName`,`LName`,`PhoneNb`,`Preferred_Brand` FROM `Customer` WHERE `Customer_ID` = " . $customer_ID;
-                     $customers = $Database->doSelect($selectCustomerSql);
-
-                     //Note: we need to check that it is an array to avoid errors
-                     if (is_array($customers))
-                     {
-                         foreach ($customers as $customer)
-                         {
-                             //We input the request information in the html table:
-                             echo "<tr>
-                             <td>" . $customer["FName"] . "</td>
-                             <td>" . $customer["LName"] . "</td>
-                             <td>" . $customer["Preferred_Brand"] . "</td>
-                             <td>" . $customer["PhoneNb"] . "</td>
-                             <td>" . $request["From_Location"] . "</td>
-                             <td>" . $request["To_Location"] . "</td>s
-                             </tr>";
-                         }
-                     }
-                 }
-             }*/
             ?>
             </tbody>
 
         </table>
     </div>
     <div class="flex-item">
-        <table id="availableTaxisTable">
+        <table id="availableTaxisTable" class = "table-condensed">
             <thead>
             <tr>
                 <th>Brand</th>
@@ -319,7 +315,7 @@
 
             <!--PHP code for adding available taxis to the second table:-->
             <?php
-            $availableTaxis = callRESTApi('Taxi');
+            $availableTaxis = callRESTApi('taxi');
 
             //In case of no available taxis we check:
             if (is_array($availableTaxis)) {
@@ -357,6 +353,34 @@
     <div class="flex-item">
         <label>
             Share mode is OFF
+
+            <select>
+
+                <?php/*
+                //Get the modes as a json from the RESTApi
+                $modes = callRESTApi("mode");
+                //For each mode in the json-reply, print the name as a value in an option
+
+                if (is_array($modes)) {
+                    foreach ($modes as $mode) {
+                        //We note the necessary information:
+                        $modeName = $mode-> Name;
+
+                        echo "<option value=\"$modeName\">$modeName</option>";
+
+
+                    }
+                }*/
+
+                ?>
+
+
+                <option value="volvo">Volvo</option>
+                <option value="saab">Saab</option>
+                <option value="opel">Opel</option>
+                <option value="audi">Audi</option>
+            </select>
+
         </label>
     </div>
 

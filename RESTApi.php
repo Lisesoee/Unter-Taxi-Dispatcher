@@ -53,7 +53,7 @@ switch ($method) {
 
             //We use a switch to set the appropriate columns for the given table:
             switch ($table) {
-                case 'Request':
+                case 'request':
                     $columns = "FK_Customer_ID, From_Location, To_Location";
                     $customer_ID = $decodedContent['FK_Customer_ID'];
                     $from_Location = $decodedContent['From_Location'];
@@ -63,23 +63,23 @@ switch ($method) {
                     echo $values;
                     break;
 
-                case 'Customer':
+                case '_customer':
                     $columns = "FName, LName, PhoneNb, Preferred_Brand";
                     //$fName =
 
                     break;
 
-                case '_Order':
+                case '_order':
                     $columns = "Estimated_Time, Estimated_Payment, FK_Request_ID, FK_Taxi_ID";
                     $estimated_Time = $decodedContent['Estimated_Time'];
                     $estimated_Payment = $decodedContent['Estimated_Payment'];
                     $request_ID=$decodedContent['FK_Request_ID'];
                     $taxi_ID=$decodedContent['FK_Taxi_ID'];
 
-//                    $values= $estimated_Time.',\''.$estimated_Payment.'\',\''.$request_ID.'\',\''.$taxi_ID.'\'';
                     $values= $estimated_Time.',\''.$estimated_Payment.'\','.$request_ID.','.$taxi_ID;
                     echo $values;
                     break;
+
             }
 
 

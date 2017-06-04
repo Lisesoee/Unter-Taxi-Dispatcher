@@ -24,7 +24,7 @@ class Database{
             //(We chose to use an ini-file to avoid risking the information being shown on the web due to a server-error or the like.) This doesnt work for some reason..
             $config = parse_ini_file('./config.ini');
             //self::$connection = new mysqli($config['host'],$config['username'],$config['password'],$config['dbname']);
-            self::$connection = new mysqli("86.52.212.76","DMU4","github","Lise&RayUnterTaxiDB");
+            self::$connection = new mysqli("86.52.212.76","DMU4","github","lise&rayuntertaxidb");
         }
 
         // If connection was not successful, we handle the error
