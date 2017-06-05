@@ -121,7 +121,7 @@ $dispatchPage->additionalLinks = "
 ";
 
 //We set the body/content of the page:
-//TODO: split the body into sections and contatinate to the pageContent. This is way to messy!
+//TODO: split the body into sections and concatenate to the pageContent. This is way to messy!
 $dispatchPage->pageContent = "<body>
 <!--Tables: -->
 <div class=\"flex-container\" id=\"tableSection\">
