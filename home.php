@@ -4,11 +4,111 @@
  * User: LiseMusen
  * Date: 16-05-2017
  * Time: 14:43
+ *
+ * Consider making a class inside this (e.g. called Homepage) and setting function availability
  */
 
+
+/**
+ * This function calls the RESTApi to place a HTTP request and do a CRUD function in the database
+ *
+ * @param $params : the parameters for specific operations
+ * @return bool|mixed|string: returns the decoded response from the RESTApi
+ */
+function callRESTApi($params)
+{
+
+    //We get the json-file containing all the requests:
+    //$response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
+    $response = file_get_contents('http://localhost:8080/RESTApi.php/' . $params);
+
+    /**
+     * We need to decode the http-response so we can use and display it:
+     *  Note: by adding a second parameter, 'true' to the json_decode method we could get the json as an
+     *  associative array, which would allow for a different way of extracting the data, but we choose
+     *  to use the json as an object to make the code more readable, since we can just extract data using
+     *  the column names
+     */
+    $response = json_decode($response);
+    return $response;
+}
+
+function displayPendingRequests()
+{
+    $pendingRequestsTableRows = '';
+
+    //Get the pending requests
+    $taxiRequests = callRESTApi('request');
+    if (is_array($taxiRequests)) {
+        foreach ($taxiRequests as $request) {
+            //We note the necessary information:
+            $requestID = $request->ID;
+            $customerID = $request->FK_customer_ID;
+            $fromAddress = $request->From_Location;
+            $toLocation = $request->To_Location;
+            $time = $request->TimeStamp;
+
+            //We get the given customer and decode the response:
+            $customer = callRESTApi('_customer/' . $customerID);
+
+            //Even though its only one customer, we still loop the array:
+            foreach ($customer as $thisCustomer) {
+                $FName = $thisCustomer->FName;
+                $LName = $thisCustomer->LName;
+                $PreferredBrand = $thisCustomer->Preferred_Brand;
+                $PhoneNb = $thisCustomer->PhoneNb;
+
+                //For each request with the given customer, we echo to the table:
+                $pendingRequestsTableRows = $pendingRequestsTableRows . "<tr id = '$requestID' class = 'requestRow'>
+                        <td>$FName</td>
+                        <td>$LName</td>
+                        <td>$PreferredBrand</td>
+                        <td>$PhoneNb</td>
+                        <td>$fromAddress</td>
+                        <td>$toLocation</td>
+                        <td>$time</td>
+                        </tr>";
+            }
+        }
+    }
+    return $pendingRequestsTableRows;
+
+}
+
+function displayAvailableTaxis()
+{
+    $availableTaxiTableRows = '';
+
+    //Get the available taxis:
+    $availableTaxis = callRESTApi('taxi');
+
+    //In case of no available taxis we check:
+    if (is_array($availableTaxis)) {
+        //For each taxi we print it if it is available:
+        foreach ($availableTaxis as $taxi) {
+            if ($taxi->isAvailable = true) {
+                //We note the necessary information:
+                $taxiID = $taxi->ID;
+                $brand = $taxi->Brand;
+                $licencePlate = $taxi->License_plate;
+                $pricePerKm = $taxi->Price_per_km;
+
+                //We concatinate the new row with the others:
+                $availableTaxiTableRows = $availableTaxiTableRows . "<tr id = '$taxiID' class = 'taxiRow'>
+                        <td>$brand</td>
+                        <td>$licencePlate</td>
+                        <td>$pricePerKm</td>
+                        </tr>";
+            }
+        }
+    }
+    return $availableTaxiTableRows;
+}
+
+
 ?>
-<!DOCTYPE html>
-<html>
+<!--<!DOCTYPE html>
+<html>-->
 <head>
 
 
@@ -27,6 +127,7 @@
             background-color: #ffff00;
 
         }
+
         header {
             background-color: #ffcc00;
             text-align: center;
@@ -58,7 +159,6 @@
             text-align: center;
         }
 
-
         .flex-container {
             display: -webkit-flex;
             display: flex;
@@ -72,7 +172,7 @@
         }
 
         .flex-item {
-            overflow:auto;
+            overflow: auto;
             background-color: transparent;
             width: auto;
             height: auto;
@@ -80,7 +180,6 @@
             align-self: flex-start;
             align-content: flex-start;
         }
-
 
         /*Adding some nice look and feel to the table rows in general: */
         tr:nth-child(odd) {
@@ -151,11 +250,11 @@
             $("#dispatchButton").click(function () {
 
                 //We set the taxiID
-                $('.selectedTaxi').each(function(){
+                $('.selectedTaxi').each(function () {
                     selectedTaxiID = this.id;
 
                     //For each selected request, we dispatch the taxi by posting an order to the database:
-                    $('.selectedRequest').each(function(){
+                    $('.selectedRequest').each(function () {
                         currentSelectedRequestID = this.id;
 
                         var currentRequest = {
@@ -176,8 +275,10 @@
                                 console.log(data);
                                 alert("Order placed");
 
-                                },
-                            error: function (jqXHR, textStatus, errorThrown) {console.log("An error occurred: " + errorThrown);}
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log("An error occurred: " + errorThrown);
+                            }
                         });
                     })
                 })
@@ -221,14 +322,14 @@
                     if (direction == "asc") {
                         //If we are ascending, we switch if the current element is larger than the second:
                         if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                            shouldSwitch= true;
+                            shouldSwitch = true;
                             //We need to break the loop:
                             break;
                         }
                     } else if (direction == "desc") {
                         //If we are descending, we switch if the current is smaller than the next:
                         if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                            shouldSwitch= true;
+                            shouldSwitch = true;
                             //And we break:
                             break;
                         }
@@ -240,7 +341,7 @@
                     rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                     switching = true;
                     //Each time a switch is done, increase this count by 1:
-                    switchcount ++;
+                    switchcount++;
                 } else {
                     //If no switching has been done AND the direction is "asc", we set the direction to "desc" and run
                     // the while loop again:
@@ -254,18 +355,7 @@
     </script>
 
 </head>
-
-<!--<header>
-
-   The header was to large and damaged the userbility of the page and was therefore deleted.
-
-   <div class="jumbotron" style = "background-color: #ff9900">
-        <h1>Unter Dispatcher</h1>
-        <!--<img src="images/taxiBackground.jpg" alt="taxi picture"/>
-
-    </div>
-</header>-->
-
+<!--
 <nav class="navbar navbar-default">
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
@@ -286,21 +376,21 @@
         </div>
     </nav>
 </nav>
-
+-->
 <body>
 
 <!--Tables: -->
-<div class="flex-container"  id="tableSection">
+<div class="flex-container" id="tableSection">
     <div>
 
         <h1>Pending requests</h1>
-        <div class="flex-item"  style="height: 420px;">
+        <div class="flex-item" style="height: 420px;">
 
 
             <!--Table comments:
             We use thead-tag to make column header look special.
             When using this, all tr-tags needs to be in a tbody-tag.-->
-            <table id="requestTable" class = "table-condensed table-responsive">
+            <table id="requestTable" class="table-condensed table-responsive">
                 <thead>
                 <tr>
                     <th onclick="sortTable(0, 'requestTable')">First name</th>
@@ -313,70 +403,8 @@
                 </tr>
                 </thead>
 
-
                 <tbody>
-
-                <!--PHP-code for getting requests for request table:-->
-                <?php
-
-                /**
-                 * This function calls the RESTApi to place a HTTP request and do a CRUD function in the database
-                 *
-                 * @param $params : the parameters for specific operations
-                 * @return bool|mixed|string: returns the decoded response from the RESTApi
-                 */
-                function callRESTApi($params)
-                {
-
-                    //We get the json-file containing all the requests:
-                    //$response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
-                    $response = file_get_contents('http://localhost:8080/RESTApi.php/' . $params);
-
-                    /**
-                     * We need to decode the http-response so we can use and display it:
-                     *  Note: by adding a second parameter, 'true' to the json_decode method we could get the json as an
-                     *  associative array, which would allow for a different way of extracting the data, but we choose
-                     *  to use the json as an object to make the code more readable, since we can just extract data using
-                     *  the column names
-                     */
-                    $response = json_decode($response);
-                    return $response;
-                }
-
-                $taxiRequests = callRESTApi('request');
-                if (is_array($taxiRequests)) {
-                    foreach ($taxiRequests as $request) {
-                        //We note the necessary information:
-                        $requestID = $request->ID;
-                        $customerID = $request->FK_customer_ID;
-                        $fromAddress = $request->From_Location;
-                        $toLocation = $request->To_Location;
-                        $time = $request->TimeStamp;
-
-                        //We get the given customer and decode the response:
-                        $customer = callRESTApi('_customer/' . $customerID);
-
-                        //Even though its only one customer, we still loop the array:
-                        foreach ($customer as $thisCustomer) {
-                            $FName = $thisCustomer->FName;
-                            $LName = $thisCustomer->LName;
-                            $PreferredBrand = $thisCustomer->Preferred_Brand;
-                            $PhoneNb = $thisCustomer->PhoneNb;
-
-                            //For each request with the given customer, we echo to the table:
-                            echo "<tr id = '$requestID' class = 'requestRow'>
-                        <td>$FName</td>
-                        <td>$LName</td>
-                        <td>$PreferredBrand</td>
-                        <td>$PhoneNb</td>
-                        <td>$fromAddress</td>
-                        <td>$toLocation</td>
-                        <td>$time</td>
-                        </tr>";
-                        }
-                    }
-                }
-                ?>
+                <?php echo displayPendingRequests(); ?>
                 </tbody>
 
             </table>
@@ -387,56 +415,32 @@
         <h1>Available taxis</h1>
         <div class="flex-item" style="height: 420px;">
 
-            <table id="availableTaxisTable" class = "table-condensed table-responsive">
+            <table id="availableTaxisTable" class="table-condensed table-responsive">
                 <thead>
                 <tr>
-                    <th onclick="sortTable(0, 'availableTaxisTable'")">Brand</th>
+                    <th onclick="sortTable(0, 'availableTaxisTable'" )
+                    ">Brand</th>
                     <th onclick="sortTable(1, 'availableTaxisTable')">Licence plate</th>
                     <th onclick="sortTable(2, 'availableTaxisTable')">Price per km</th>
                 </tr>
                 </thead>
 
                 <tbody>
-
-                <!--PHP code for adding available taxis to the second table:-->
-                <?php
-                $availableTaxis = callRESTApi('taxi');
-
-                //In case of no available taxis we check:
-                if (is_array($availableTaxis)) {
-                    //For each taxi we print it if it is available:
-                    foreach ($availableTaxis as $taxi) {
-                        if ($taxi->isAvailable = true) {
-                            //We note the necessary information:
-                            $taxiID = $taxi->ID;
-                            $brand = $taxi->Brand;
-                            $licencePlate = $taxi->License_plate;
-                            $pricePerKm = $taxi->Price_per_km;
-
-                            echo "<tr id = '$taxiID' class = 'taxiRow'>
-                        <td>$brand</td>
-                        <td>$licencePlate</td>
-                        <td>$pricePerKm</td>
-                        </tr>";
-                        }
-                    }
-                }
-                ?>
-
+                <?php echo displayAvailableTaxis(); ?>
                 </tbody>
             </table>
         </div>
     </div>
-    </div>
+</div>
 
 
 <!--Bottom bar with label and button -->
-<div class="flex-container" id="bottomBar" style="height: auto" frame = "box">
+<div class="flex-container" id="bottomBar" style="height: auto" frame="box">
     <div class="flex-item">
-        <label>
-            <select>
 
-                <?php/*
+        <select>
+
+            <?php /*
                 //Get the modes as a json from the RESTApi
                 $modes = callRESTApi("mode");
                 //For each mode in the json-reply, print the name as a value in an option
@@ -452,15 +456,14 @@
                     }
                 }*/
 
-                ?>
+            ?>
 
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="opel">Opel</option>
-                <option value="audi">Audi</option>
-            </select>
+            <option value="volvo">Volvo</option>
+            <option value="saab">Saab</option>
+            <option value="opel">Opel</option>
+            <option value="audi">Audi</option>
+        </select>
 
-        </label>
     </div>
 
     <div class="flex-item">
@@ -471,11 +474,11 @@
 </div>
 
 </body>
-
+<!--
 <footer>
     Developed by Rayan and Lise inc.
 </footer>
 
 </html>
-
+-->
 

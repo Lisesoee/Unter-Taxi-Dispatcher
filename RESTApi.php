@@ -97,21 +97,21 @@ switch ($method) {
 
                 case 'credentials':
 
-                    if($key=='validation'){
-                        $username= $decodedContent['Username'];
+                    if ($key == 'validation') {
+                        $username = $decodedContent['Username'];
                         $password = $decodedContent['Password'];
-                        $validation_sql = 'SELECT * FROM `credentials` WHERE Username='.'\''.$username.'\' AND Password=\''. $password .'\'';
+                        $validation_sql = 'SELECT * FROM `credentials` WHERE Username=' . '\'' . $username . '\' AND Password=\'' . $password . '\'';
                         $result = $Database->doSelect($validation_sql);
-                    }else{
+                    } else {
 
-                    $columns = "Email, Username, Password";
+                        $columns = "Email, Username, Password";
 
-                    $email = $decodedContent['Email'];
-                    $username = $decodedContent['Username'];
-                    $password = $decodedContent['Password'];
+                        $email = $decodedContent['Email'];
+                        $username = $decodedContent['Username'];
+                        $password = $decodedContent['Password'];
 
-                    $values = '\'' . $email . '\',\'' . $username . '\',\'' . $password . '\'';
-                    //echo $values; //for debugging purposes
+                        $values = '\'' . $email . '\',\'' . $username . '\',\'' . $password . '\'';
+                        //echo $values; //for debugging purposes
                     }
 
                     break;
@@ -129,7 +129,7 @@ switch ($method) {
                     break;
             }
 
-            if($key!='validation') {
+            if ($key != 'validation') {
                 //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
                 $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
             }
@@ -148,9 +148,9 @@ switch ($method) {
 }
 
 //Execute sql statement
-if ($method == 'GET' && $key!='validation') {
+if ($method == 'GET' && $key != 'validation') {
     $result = $Database->doSelect($sql);
-} else if ($method != 'GET' && $key!='validation') {
+} else if ($method != 'GET' && $key != 'validation') {
     $result = $Database->doExecuteQuery($sql);
 }
 

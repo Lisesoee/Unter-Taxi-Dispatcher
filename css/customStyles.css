@@ -1,0 +1,80 @@
+html {
+    background-color: #ffff00;
+
+}
+
+header {
+    background-color: #ffcc00;
+    text-align: center;
+    text-decoration-color: burlywood;
+    padding: 2%
+}
+
+body {
+
+}
+
+footer {
+    position: relative;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    background-color: #ffff00;
+    text-align: center;
+}
+
+dev {
+    background-color: #ffff00;
+
+}
+
+h1 {
+    font-size: large;
+    text-align: center;
+}
+
+.flex-container {
+    display: -webkit-flex;
+    display: flex;
+    background-color: transparent;
+    width: auto;
+    height: auto;
+    margin: auto;
+    align-items: flex-start;
+    align-self: flex-start;
+    align-content: flex-start;
+}
+
+.flex-item {
+    overflow: auto;
+    background-color: transparent;
+    width: auto;
+    height: auto;
+    margin: auto;
+    align-self: flex-start;
+    align-content: flex-start;
+}
+
+/*Adding some nice look and feel to the table rows in general: */
+tr:nth-child(odd) {
+    /*background-color: #99ccff;
+}
+
+tr:nth-child(even) {
+    background-color: #b3daff;*/
+}
+
+tr:hover {
+    background-color: #ffcc00;
+}
+
+/*Makes sure that the table header doesn't light up on hover like the other table-rows*/
+th {
+    background-color: #fff;
+}
+
+/*Selected row in both tables are coloured:*/
+.selectedRequest, .selectedTaxi {
+    background-color: #ff9900;
+}
