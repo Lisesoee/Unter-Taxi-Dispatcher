@@ -186,7 +186,6 @@
     </script>
 
     <script>
-        <!--Sort function template found on W3Schools-->
         /**
          * This function sorts the given column in the given HTML table
          *

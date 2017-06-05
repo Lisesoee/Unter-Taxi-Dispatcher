@@ -31,7 +31,6 @@ $key = array_shift($request);
 
 switch ($method) {
     case 'GET':
-        //TODO: make sure this works: (is the key really null if its not set in the request? - else we will have an invisible error)
         //If there is no id, we get all instances:
         if ($key == null) {
             $sql = "SELECT * FROM `$table`";
@@ -59,7 +58,6 @@ switch ($method) {
                     $to_Location = $decodedContent['To_Location'];
 
                     $values = $customer_ID . ',\'' . $from_Location . '\',\'' . $to_Location . '\'';
-                    //echo $values;
                     break;
 
                 case '_customer':
@@ -76,7 +74,6 @@ switch ($method) {
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
                     $result = curl_exec($ch);
-                    //echo $result;
                     curl_close($ch);
 
                     $select_cred_sql = "SELECT * FROM `credentials` WHERE ID=(SELECT MAX(ID) FROM `credentials`);";
@@ -158,10 +155,9 @@ if ($method == 'GET' && $key!='validation') {
 }
 
 
-//We set and encode the response
+//We set and encode the response and send it
 $response = json_encode($result);
 echo $response;
-
 
 
 
