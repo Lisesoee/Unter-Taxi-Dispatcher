@@ -6,11 +6,7 @@
 
 $(document).ready(function () {
 
-    alert('loaded');
-//$('.play_navigation a').live('click', function(){
-    //$('.play_navigation').on('click', 'a', function (e) {
-    //$(document).on("click",".removeruleset",function(){
-
+    //alert('loaded'); //for debugging purposes
 
     //$(document).on('click','table tr', function(){
     $('table tr').click(function () {
