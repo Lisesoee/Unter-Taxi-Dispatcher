@@ -107,8 +107,8 @@ function displayAvailableTaxis()
 
 
 ?>
-<!--<!DOCTYPE html>
-<html>-->
+<!DOCTYPE html>
+<html>
 <head>
 
 
@@ -355,7 +355,7 @@ function displayAvailableTaxis()
     </script>
 
 </head>
-<!--
+
 <nav class="navbar navbar-default">
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
@@ -376,7 +376,7 @@ function displayAvailableTaxis()
         </div>
     </nav>
 </nav>
--->
+
 <body>
 
 <!--Tables: -->
@@ -474,11 +474,11 @@ function displayAvailableTaxis()
 </div>
 
 </body>
-<!--
+
 <footer>
     Developed by Rayan and Lise inc.
 </footer>
 
 </html>
--->
+
 

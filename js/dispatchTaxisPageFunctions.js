@@ -15,20 +15,17 @@ $(document).ready(function () {
     //$(document).on('click','table tr', function(){
     $('table tr').click(function () {
 
-        alert('click fired');
+        //alert('click fired'); //for debuggin purposes
+
         //----REQUEST TABLE----
         //We check if its a request row:
         if ($(this).hasClass('requestRow')) {
-            alert('removing class');
-
             //If the request row is selected we unselect it:
             if ($(this).hasClass('selectedRequest')) {
                 $(this).removeClass('selectedRequest');
             }
             //Else, we add select to it:
             else {
-                alert('adding class');
-
                 ($(this)).addClass('selectedRequest');
             }
         }
