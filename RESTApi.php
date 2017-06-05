@@ -79,9 +79,7 @@ switch ($method) {
                     $values= $estimated_Time.',\''.$estimated_Payment.'\','.$request_ID.','.$taxi_ID;
                     echo $values;
                     break;
-
             }
-
 
             //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
             $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
