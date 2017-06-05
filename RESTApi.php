@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: LiseMusen
+ * User: LiseMusen & Rayan El Hajj
  * Date: 22-05-2017
  * Time: 14:29
  */
@@ -47,25 +47,75 @@ switch ($method) {
         break;
 
     case 'POST':
-        $decodedContent = json_decode($content,true);
+        $decodedContent = json_decode($content, true);
 
         if (is_array($decodedContent)) {
-
             //We use a switch to set the appropriate columns for the given table:
             switch ($table) {
                 case 'request':
-                    $columns = "FK_Customer_ID, From_Location, To_Location";
+                    $columns = "FK_customer_ID, From_Location, To_Location";
                     $customer_ID = $decodedContent['FK_Customer_ID'];
                     $from_Location = $decodedContent['From_Location'];
                     $to_Location = $decodedContent['To_Location'];
 
-                    $values =  $customer_ID.',\''.$from_Location.'\',\''.$to_Location.'\'';
-                    echo $values;
+                    $values = $customer_ID . ',\'' . $from_Location . '\',\'' . $to_Location . '\'';
+                    //echo $values;
                     break;
 
                 case '_customer':
-                    $columns = "FName, LName, PhoneNb, Preferred_Brand";
-                    //$fName =
+                    $columns = "FName, LName, PhoneNb, Preferred_Brand, FK_Credentials_ID";
+
+                    $credentials = $decodedContent["Credentials"];
+                    $customer = $decodedContent["Customer"];
+
+
+                    $credentials = json_encode($credentials);
+                    $ch = curl_init('http://localhost/RESTApi.php/credentials/');
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $credentials);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+                    $result = curl_exec($ch);
+                    //echo $result;
+                    curl_close($ch);
+
+                    $select_cred_sql = "SELECT * FROM `credentials` WHERE ID=(SELECT MAX(ID) FROM `credentials`);";
+
+                    $insertedCred_ID = $Database->doSelect($select_cred_sql);
+
+                    foreach ($insertedCred_ID as $item) {
+                        $FK_Credentials_ID = $item['ID'];
+                    }
+
+                    $firstName = $customer['FName'];
+                    $lastName = $customer['LName'];
+                    $phoneNb = $customer['PhoneNb'];
+                    $preferredBrand = $customer['Preferred_Brand'];
+
+                    $values = '\'' . $firstName . '\',\'' . $lastName . '\',\'' . $phoneNb . '\',\'' . $preferredBrand . '\',' . $FK_Credentials_ID;
+
+                    //echo $values; //for debugging purposes
+
+                    break;
+
+                case 'credentials':
+
+                    if($key=='validation'){
+                        $username= $decodedContent['Username'];
+                        $password = $decodedContent['Password'];
+                        $validation_sql = 'SELECT * FROM `credentials` WHERE Username='.'\''.$username.'\' AND Password=\''. $password .'\'';
+                        $result = $Database->doSelect($validation_sql);
+                    }else{
+
+                    $columns = "Email, Username, Password";
+
+                    $email = $decodedContent['Email'];
+                    $username = $decodedContent['Username'];
+                    $password = $decodedContent['Password'];
+
+                    $values = '\'' . $email . '\',\'' . $username . '\',\'' . $password . '\'';
+                    //echo $values; //for debugging purposes
+                    }
 
                     break;
 
@@ -73,22 +123,24 @@ switch ($method) {
                     $columns = "Estimated_Time, Estimated_Payment, FK_Request_ID, FK_Taxi_ID";
                     $estimated_Time = $decodedContent['Estimated_Time'];
                     $estimated_Payment = $decodedContent['Estimated_Payment'];
-                    $request_ID=$decodedContent['FK_Request_ID'];
-                    $taxi_ID=$decodedContent['FK_Taxi_ID'];
+                    $request_ID = $decodedContent['FK_Request_ID'];
+                    $taxi_ID = $decodedContent['FK_Taxi_ID'];
 
-                    $values= $estimated_Time.',\''.$estimated_Payment.'\','.$request_ID.','.$taxi_ID;
-                    echo $values;
+                    $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
+                    //echo $values; //for debugging purposes
+
                     break;
             }
 
-            //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
-            $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
+            if($key!='validation') {
+                //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
+                $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
+            }
 
-            echo $sql;
-        }else{
+            //echo $sql; //for debugging purposes
+        } else {
             echo "Incorrect json input: must be an array"; //prompting the error
         }
-
         break;
 
     case 'DELETE':
@@ -99,9 +151,9 @@ switch ($method) {
 }
 
 //Execute sql statement
-if ($method == 'GET') {
+if ($method == 'GET' && $key!='validation') {
     $result = $Database->doSelect($sql);
-} else {
+} else if ($method != 'GET' && $key!='validation') {
     $result = $Database->doExecuteQuery($sql);
 }
 
@@ -109,6 +161,9 @@ if ($method == 'GET') {
 //We set and encode the response
 $response = json_encode($result);
 echo $response;
+
+
+
 
 
 
