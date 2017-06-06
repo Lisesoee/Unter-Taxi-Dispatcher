@@ -38,15 +38,21 @@ switch ($method) {
         } else {
             $sql = "SELECT * FROM `$table` WHERE id =$key;";
         }
-
-
         break;
+
     case 'PUT':
         switch($table){
             case 'mode':
                 $values = "is_Selected = 1";
                 echo $values;
                 echo $table.$key;
+                break;
+
+
+            case '_customer':
+                $values = "Priority = Priority-1";
+                echo $values;
+                echo $table+$key;
                 break;
         }
         //Syntax example: Update Customer set Name = newName where id = 1;
