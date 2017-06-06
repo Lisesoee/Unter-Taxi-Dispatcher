@@ -5,6 +5,14 @@
       <webServer id="a6d34a7a-596e-48fa-9e56-5af2e02a9b63" name="localhost" url="http://localhost">
         <fileTransfer port="0" mountedRoot="C:\xampp\htdocs" accessType="MOUNT" />
       </webServer>
+      <webServer id="790f36fe-f3cb-4ffd-85ec-1b14f665ebbd" name="server" url="http://87.54.141.140">
+        <fileTransfer host="87.54.141.140" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>
