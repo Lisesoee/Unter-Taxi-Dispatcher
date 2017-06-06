@@ -66,7 +66,7 @@ $(document).ready(function () {
                 //We send a HTTP request to the RESTApi with the order information:
                 $.ajax({
                     //url: 'http://360itsolutions.dk/RESTApi.php/_Order',
-                    url: 'http://localhost:8080/RESTApi.php/_Order',
+                    url: 'http://localhost:8080/RESTApi.php/_order',
                     type: "POST",
                     data: JSON.stringify(currentRequest),
                     processData: false,

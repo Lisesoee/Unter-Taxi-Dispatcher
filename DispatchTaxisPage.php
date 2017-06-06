@@ -105,7 +105,11 @@ class DispatchTaxisPage extends HomePage
         }
         return $availableTaxiTableRows;
     }
+
 }
+
+
+
 
 /**
  * Following code is for creating the page, setting the different parts of the html document, and displaying the page.
@@ -117,8 +121,12 @@ $dispatchPage->additionalLinks = "
 <script src=\"js/dispatchTaxisPageFunctions.js\" type=\"text/javascript\"></script>
 <script src=\"js/sortTableGeneric.js\" type=\"text/javascript\"></script>
 <link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">;
-
 ";
+
+
+
+
+
 
 //We set the body/content of the page:
 //TODO: split the body into sections and concatenate to the pageContent. This is way to messy!
@@ -147,7 +155,7 @@ $dispatchPage->pageContent = "<body>
                 </tr>
                 </thead>
 
-                <tbody>" . $dispatchPage->displayPendingRequests() . "</tbody>
+                <tbody>".$dispatchPage->displayPendingRequests()."</tbody>
 
             </table>
         </div>
@@ -166,13 +174,12 @@ $dispatchPage->pageContent = "<body>
                 </tr>
                 </thead>
 
-                <tbody>" . $dispatchPage->displayAvailableTaxis() . "
+                <tbody>".$dispatchPage->displayAvailableTaxis()."
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
 
 <!--Bottom bar with label and button -->
 <div class=\"flex-container\" id=\"bottomBar\" style=\"height: auto\" frame=\"box\">
@@ -193,8 +200,10 @@ $dispatchPage->pageContent = "<body>
         </button>
     </div>
 </div>
-
 </body>";
+
+
+
 
 //And finally, we display the page (after all the specific sections has been set)
 $dispatchPage->DisplayPage();

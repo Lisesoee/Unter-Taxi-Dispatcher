@@ -23,12 +23,10 @@ $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
 $table = array_shift($request);
 $key = array_shift($request);
 
-
-//TODO: delete:
-//In case of updating or posting, we need the new values:
-//$values = array_shift($request);
-
-
+/**
+ * This switch controls the entire RESTApi
+ * Depending on the Request method, we perform different operations on the database.
+ */
 switch ($method) {
     case 'GET':
         //If there is no id, we get all instances:
@@ -41,8 +39,10 @@ switch ($method) {
 
         break;
     case 'PUT':
-        //Syntax example: Update Customer set oldName = newName where id = 1;
-        $sql = "UPDATE `$table` SET $values WHERE ID =$key;";
+
+            //Syntax example: Update Customer set oldName = newName where id = 1;
+            $sql = "UPDATE `$table` SET $values WHERE ID =$key;";
+
         break;
 
     case 'POST':
@@ -123,6 +123,10 @@ switch ($method) {
                     $request_ID = $decodedContent['FK_Request_ID'];
                     $taxi_ID = $decodedContent['FK_Taxi_ID'];
 
+                    //When the order is placed, we flip the boolean in the request table:
+                    //$flipBooleanSQL = "UPDATE `request` SET isDispatched = TRUE WHERE ID =$request_ID";
+                    //$Database ->doExecuteQuery($flipBooleanSQL);
+
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
 
@@ -154,6 +158,9 @@ if ($method == 'GET' && $key != 'validation') {
     $result = $Database->doExecuteQuery($sql);
 }
 
+if ($booleanFlipped!=null){
+   // $result.=$booleanFlipped;
+}
 
 //We set and encode the response and send it
 $response = json_encode($result);
