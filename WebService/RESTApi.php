@@ -42,7 +42,14 @@ switch ($method) {
 
         break;
     case 'PUT':
-        //Syntax example: Update Customer set oldName = newName where id = 1;
+        switch($table){
+            case 'mode':
+                $values = "is_Selected = 1";
+                echo $values;
+                echo $table.$key;
+                break;
+        }
+        //Syntax example: Update Customer set Name = newName where id = 1;
         $sql = "UPDATE `$table` SET $values WHERE ID =$key;";
         break;
 
@@ -134,6 +141,7 @@ switch ($method) {
                     //echo $values; //for debugging purposes
 
                     break;
+
             }
 
             if ($key != 'validation') {

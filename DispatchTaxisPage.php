@@ -111,7 +111,8 @@ class DispatchTaxisPage extends HomePage
     }
 
     /**
-     * This function displays the modes made available in the database:
+     * This function displays the modes made available in the database
+     *
      */
     public function displayModes(){
         $modes = '';
@@ -131,6 +132,28 @@ class DispatchTaxisPage extends HomePage
         }
         return $modes;
     }
+
+    public function modeSelected($selectedMode, $modeID){
+//        $response = $this->callRESTApi('mode/'.$selectedMode);
+
+
+        if(isset($_PUT['modeSelected'])){
+            mainInfo($_PUT['modeSelected']);
+        }
+
+
+        $data = array("name" => $selectedMode);
+        echo $data; //for debugging
+        $ch = curl_init('http://87.54.141.140/WebService/RESTApi.php/mode/'.$modeID);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($data));
+
+        $response = curl_exec($ch);
+        if(!$response) {
+            return false;
+        }
+    }
 }
 
 
@@ -147,8 +170,6 @@ $dispatchPage->additionalLinks = "
     <script src=\"js/sortTableGeneric.js\" type=\"text/javascript\"></script>
     <link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">
 ";
-
-
 
 
 

@@ -24,10 +24,12 @@ $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
 $table = array_shift($request);
 $key = array_shift($request);
 
-/**
- * This switch controls the entire RESTApi
- * Depending on the Request method, we perform different operations on the database.
- */
+
+//TODO: delete:
+//In case of updating or posting, we need the new values:
+//$values = array_shift($request);
+
+
 switch ($method) {
     case 'GET':
         //If there is no id, we get all instances:
@@ -40,10 +42,21 @@ switch ($method) {
 
         break;
     case 'PUT':
+        switch($table){
+            case 'mode':
 
-            //Syntax example: Update Customer set oldName = newName where id = 1;
-            $sql = "UPDATE `$table` SET $values WHERE ID =$key;";
+                //We reset the modes
+                $clearModesSql = "UPDATE `mode` SET is_Selected=0";
+                $Database->doExecuteQuery($clearModesSql);
 
+                //And set the values to flip the boolean:
+                $values = "is_Selected = 1";
+                echo $values;
+                echo $table.$key;
+                break;
+        }
+        //Syntax example: Update Customer set Name = newName where id = 1;
+        $sql = "UPDATE `$table` SET $values WHERE ID =$key;";
         break;
 
     case 'POST':
@@ -134,6 +147,7 @@ switch ($method) {
                     //echo $values; //for debugging purposes
 
                     break;
+
             }
 
             if ($key != 'validation') {
@@ -162,14 +176,8 @@ if ($method == 'GET' && $key != 'validation') {
 }
 
 
-
-
 //We set and encode the response and send it
 $response = json_encode($result);
+
 echo $response;
-
-
-
-
-
 
