@@ -119,9 +119,17 @@ class DispatchTaxisPage extends HomePage
         if (is_array($modesArray)) {
             foreach ($modesArray as $mode) {
                 $modeName = $mode->Name;
-                $modes = $modes . "<option value = '$modeName'>$modeName</option>";
+                $modeID = $mode->ID;
+                if ($mode->is_Selected == 1){
+                    $availability = 'selected';
+                }
+                else{
+                    $availability = '';
+                }
+                $modes = $modes . "<option id ='$modeID' value = '$modeName' ".$availability.">$modeName</option>";
             }
         }
+        return $modes;
     }
 }
 
