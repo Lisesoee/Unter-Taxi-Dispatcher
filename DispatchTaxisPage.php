@@ -11,29 +11,6 @@ require("HomePage.php");
 
 class DispatchTaxisPage extends HomePage
 {
-    /**
-     * This function calls the RESTApi to place a HTTP request and do a CRUD function in the database
-     *
-     * @param $params : the parameters for specific operations
-     * @return bool|mixed|string: returns the decoded response from the RESTApi
-     */
-    public function callRESTApi($params)
-    {
-
-        //We get the json-file containing all the requests:
-        //$response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
-        $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php/' . $params);
-
-        /**
-         * We need to decode the http-response so we can use and display it:
-         *  Note: by adding a second parameter, 'true' to the json_decode method we could get the json as an
-         *  associative array, which would allow for a different way of extracting the data, but we choose
-         *  to use the json as an object to make the code more readable, since we can just extract data using
-         *  the column names
-         */
-        $response = json_decode($response);
-        return $response;
-    }
 
     public function displayPendingRequests()
     {
@@ -111,7 +88,8 @@ class DispatchTaxisPage extends HomePage
     }
 
     /**
-     * This function displays the modes made available in the database:
+     * This function displays the modes made available in the database
+     *
      */
     public function displayModes(){
         $modes = '';
@@ -119,8 +97,38 @@ class DispatchTaxisPage extends HomePage
         if (is_array($modesArray)) {
             foreach ($modesArray as $mode) {
                 $modeName = $mode->Name;
-                $modes = $modes . "<option value = '$modeName'>$modeName</option>";
+                $modeID = $mode->ID;
+                if ($mode->is_Selected == 1){
+                    $availability = 'selected';
+                }
+                else{
+                    $availability = '';
+                }
+                $modes = $modes . "<option id ='$modeID' value = '$modeName' ".$availability.">$modeName</option>";
             }
+        }
+        return $modes;
+    }
+
+    public function modeSelected($selectedMode, $modeID){
+//        $response = $this->callRESTApi('mode/'.$selectedMode);
+
+
+        if(isset($_PUT['modeSelected'])){
+            mainInfo($_PUT['modeSelected']);
+        }
+
+
+        $data = array("name" => $selectedMode);
+        echo $data; //for debugging
+        $ch = curl_init('http://87.54.141.140/WebService/RESTApi.php/mode/'.$modeID);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($data));
+
+        $response = curl_exec($ch);
+        if(!$response) {
+            return false;
         }
     }
 }
@@ -139,8 +147,6 @@ $dispatchPage->additionalLinks = "
     <script src=\"js/sortTableGeneric.js\" type=\"text/javascript\"></script>
     <link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">
 ";
-
-
 
 
 

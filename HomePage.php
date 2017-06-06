@@ -22,6 +22,31 @@ class HomePage
 
 
     /**
+     * This function calls the RESTApi to place a HTTP request and do a CRUD function in the database
+     *
+     * @param $params : the parameters for specific operations
+     * @return bool|mixed|string: returns the decoded response from the RESTApi
+     */
+    public function callRESTApi($params)
+    {
+
+        //We get the json-file containing all the requests:
+        //$response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
+        $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php/' . $params);
+
+        /**
+         * We need to decode the http-response so we can use and display it:
+         *  Note: by adding a second parameter, 'true' to the json_decode method we could get the json as an
+         *  associative array, which would allow for a different way of extracting the data, but we choose
+         *  to use the json as an object to make the code more readable, since we can just extract data using
+         *  the column names
+         */
+        $response = json_decode($response);
+        return $response;
+    }
+
+
+    /**
      * This function displays everything for the page (except the specific non-generic content)
      * Needs to be called from subclass to show the proper information in the html file
      */

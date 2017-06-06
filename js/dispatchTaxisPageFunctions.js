@@ -102,6 +102,26 @@ $(document).ready(function () {
             })
         })
     });
+
+    /**
+     * This function calls the RESTApi with a put-request that resets the modes
+     * and flip the boolean for the selected mode to true.
+     */
+    $('#modeSelector').change(function() {
+        //Selected value
+        //Note: 'this' is the combobox, so we have to get the id from the child with the ':selected' selector
+        var id = $(this).children(":selected").attr("id");
+
+        //alert("Id of this: " + id + ". "); //for debugging
+
+        $.ajax({
+            url: 'http://localhost:8080/TechnicalServices/RESTApi.php/mode/'+id,
+            type: 'PUT',
+            success: function (data) {
+                alert('Load was performed.');
+            }
+        });
+    });
 });
 
 
