@@ -52,6 +52,9 @@ $(document).ready(function () {
         $('.selectedTaxi').each(function () {
             selectedTaxiID = this.id;
 
+            //We remove the taxi since its not available anymore:
+            $(this).remove();
+
             //For each selected request, we dispatch the taxi by posting an order to the database:
             $('.selectedRequest').each(function () {
                 currentSelectedRequestID = this.id;
@@ -63,16 +66,31 @@ $(document).ready(function () {
                     "FK_Taxi_ID": selectedTaxiID
                 };
 
+
+
+                //We remove the row:
+                //TODO: find some way to remove inthe success case of the ajax-request.
+                // (We don't want to remove the line unless the order was successful,
+                // but the scope hinders use of 'this' which complicates things.)
+                $(this).remove();
+
+
                 //We send a HTTP request to the RESTApi with the order information:
+                //Note: when the order is placed, the booleans for the taxi availability and request status is flipped automatically.
                 $.ajax({
                     //url: 'http://360itsolutions.dk/RESTApi.php/_Order',
-                    url: 'http://87.54.141.140/WebService/RESTApi.php/_Order',
+                    //header: ('Access-Control-Allow-Origin: http://87.54.141.140/WebService/RESTApi.php/_order'),
+                    //url: 'http://87.54.141.140/WebService/RESTApi.php/_order',
+                    url: 'http://localhost:8080/RESTApi.php/_order',
                     type: "POST",
                     data: JSON.stringify(currentRequest),
                     processData: false,
                     success: function (data, textStatus, jqXHR) {
                         console.log(data);
                         alert("Order placed");
+
+                        //TODO: this is the place the remove should be. Unfortunately none of the syntax tried worked.
+                        //$('#requestTable tr:last').remove();
 
                     },
                     error: function (jqXHR, textStatus, errorThrown) {

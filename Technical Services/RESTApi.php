@@ -124,9 +124,11 @@ switch ($method) {
                     $request_ID = $decodedContent['FK_Request_ID'];
                     $taxi_ID = $decodedContent['FK_Taxi_ID'];
 
-                    //When the order is placed, we flip the boolean in the request table:
-                    //$flipBooleanSQL = "UPDATE `request` SET isDispatched = TRUE WHERE ID =$request_ID";
-                    //$Database ->doExecuteQuery($flipBooleanSQL);
+                    //We flip the booleans:
+                    $flipRequestBoolean = "UPDATE `request` SET isDispatched = TRUE WHERE ID =$request_ID";
+                    $Database ->doExecuteQuery($flipRequestBoolean);
+                    $flipTaxiBoolean = "UPDATE `taxi` SET isAvailable = FALSE WHERE ID =$taxi_ID";
+                    $Database ->doExecuteQuery($flipTaxiBoolean);
 
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes

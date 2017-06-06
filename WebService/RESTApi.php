@@ -124,6 +124,12 @@ switch ($method) {
                     $request_ID = $decodedContent['FK_Request_ID'];
                     $taxi_ID = $decodedContent['FK_Taxi_ID'];
 
+                    //We flip the booleans:
+                    $flipRequestBoolean = "UPDATE `request` SET isDispatched = TRUE WHERE ID =$request_ID";
+                    $Database ->doExecuteQuery($flipRequestBoolean);
+                    $flipTaxiBoolean = "UPDATE `taxi` SET isAvailable = FALSE WHERE ID =$taxi_ID";
+                    $Database ->doExecuteQuery($flipTaxiBoolean);
+
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
 
@@ -158,6 +164,7 @@ if ($method == 'GET' && $key != 'validation') {
 
 //We set and encode the response and send it
 $response = json_encode($result);
+
 echo $response;
 
 

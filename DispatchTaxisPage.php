@@ -22,7 +22,7 @@ class DispatchTaxisPage extends HomePage
 
         //We get the json-file containing all the requests:
         //$response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
-        $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php' . $params);
+        $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php/' . $params);
 
         /**
          * We need to decode the http-response so we can use and display it:
@@ -43,25 +43,27 @@ class DispatchTaxisPage extends HomePage
         $taxiRequests = $this->callRESTApi('request');
         if (is_array($taxiRequests)) {
             foreach ($taxiRequests as $request) {
-                //We note the necessary information:
-                $requestID = $request->ID;
-                $customerID = $request->FK_customer_ID;
-                $fromAddress = $request->From_Location;
-                $toLocation = $request->To_Location;
-                $time = $request->TimeStamp;
+                //IF the request is not dispatched we display it:
+                if ($request->isDispatched != true){
+                    //We note the necessary information:
+                    $requestID = $request->ID;
+                    $customerID = $request->FK_customer_ID;
+                    $fromAddress = $request->From_Location;
+                    $toLocation = $request->To_Location;
+                    $time = $request->TimeStamp;
 
-                //We get the given customer and decode the response:
-                $customer = $this->callRESTApi('_customer/' . $customerID);
+                    //We get the given customer and decode the response:
+                    $customer = $this->callRESTApi('_customer/' . $customerID);
 
-                //Even though its only one customer, we still loop the array:
-                foreach ($customer as $thisCustomer) {
-                    $FName = $thisCustomer->FName;
-                    $LName = $thisCustomer->LName;
-                    $PreferredBrand = $thisCustomer->Preferred_Brand;
-                    $PhoneNb = $thisCustomer->PhoneNb;
+                    //Even though its only one customer, we still loop the array:
+                    foreach ($customer as $thisCustomer) {
+                        $FName = $thisCustomer->FName;
+                        $LName = $thisCustomer->LName;
+                        $PreferredBrand = $thisCustomer->Preferred_Brand;
+                        $PhoneNb = $thisCustomer->PhoneNb;
 
-                    //For each request with the given customer, we echo to the table:
-                    $pendingRequestsTableRows = $pendingRequestsTableRows . "<tr id = '$requestID' class = 'requestRow'>
+                        //For each request with the given customer, we echo to the table:
+                        $pendingRequestsTableRows = $pendingRequestsTableRows . "<tr id = '$requestID' class = 'requestRow'>
                         <td>$FName</td>
                         <td>$LName</td>
                         <td>$PreferredBrand</td>
@@ -70,7 +72,9 @@ class DispatchTaxisPage extends HomePage
                         <td>$toLocation</td>
                         <td>$time</td>
                         </tr>";
+                    }
                 }
+
             }
         }
         return $pendingRequestsTableRows;
