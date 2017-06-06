@@ -6,7 +6,6 @@
  * Date: 22-05-2017
  * Time: 09:47
  *
- * TODO: consider changing to PDO to handle errors better
  */
 class Database
 {

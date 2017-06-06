@@ -110,6 +110,19 @@ class DispatchTaxisPage extends HomePage
         return $availableTaxiTableRows;
     }
 
+    /**
+     * This function displays the modes made available in the database:
+     */
+    public function displayModes(){
+        $modes = '';
+        $modesArray = $this->callRESTApi('mode');
+        if (is_array($modesArray)) {
+            foreach ($modesArray as $mode) {
+                $modeName = $mode->Name;
+                $modes = $modes . "<option value = '$modeName'>$modeName</option>";
+            }
+        }
+    }
 }
 
 
@@ -124,7 +137,7 @@ $dispatchPage = new DispatchTaxisPage();
 $dispatchPage->additionalLinks = "
 <script src=\"js/dispatchTaxisPageFunctions.js\" type=\"text/javascript\"></script>
 <script src=\"js/sortTableGeneric.js\" type=\"text/javascript\"></script>
-<link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">;
+<link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">
 ";
 
 
@@ -188,13 +201,7 @@ $dispatchPage->pageContent = "<body>
 <!--Bottom bar with label and button -->
 <div class=\"flex-container\" id=\"bottomBar\" style=\"height: auto\" frame=\"box\">
     <div class=\"flex-item\">
-
-        <select>
-            <option value=\"volvo\">Volvo</option>
-            <option value=\"saab\">Saab</option>
-            <option value=\"opel\">Opel</option>
-            <option value=\"audi\">Audi</option>
-        </select>
+        <select class=\"form-control\" id=\"inputLocation\" name=\"inputLocation\">".$dispatchPage->displayModes()."</select>
 
     </div>
 
