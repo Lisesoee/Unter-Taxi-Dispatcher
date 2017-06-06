@@ -135,9 +135,9 @@ class DispatchTaxisPage extends HomePage
 $dispatchPage = new DispatchTaxisPage();
 //we add page-specific links:
 $dispatchPage->additionalLinks = "
-<script src=\"js/dispatchTaxisPageFunctions.js\" type=\"text/javascript\"></script>
-<script src=\"js/sortTableGeneric.js\" type=\"text/javascript\"></script>
-<link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">
+    <script src=\"js/dispatchTaxisPageFunctions.js\" type=\"text/javascript\"></script>
+    <script src=\"js/sortTableGeneric.js\" type=\"text/javascript\"></script>
+    <link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">
 ";
 
 
@@ -201,7 +201,7 @@ $dispatchPage->pageContent = "<body>
 <!--Bottom bar with label and button -->
 <div class=\"flex-container\" id=\"bottomBar\" style=\"height: auto\" frame=\"box\">
     <div class=\"flex-item\">
-        <select class=\"form-control\" id=\"inputLocation\" name=\"inputLocation\">".$dispatchPage->displayModes()."</select>
+        <select class=\"form-control\" id=\"modeSelector\" name=\"modeSelector\">".$dispatchPage->displayModes()."</select>
 
     </div>
 
