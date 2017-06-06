@@ -18,6 +18,7 @@ class ManageCustomersPage extends HomePage
 
 if ($_SERVER['REQUEST_METHOD'] == 'PUT') //if this is the first time, it does nothing
 {
+    //TODO: could be in a method in the class instead of here:
     $customerID = htmlspecialchars($_PUT['customerID']);
     //var_dump($_POST);
     echo "Calling rest";
