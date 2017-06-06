@@ -78,10 +78,10 @@ $(document).ready(function () {
                 //We send a HTTP request to the RESTApi with the order information:
                 //Note: when the order is placed, the booleans for the taxi availability and request status is flipped automatically.
                 $.ajax({
-                    //url: 'http://360itsolutions.dk/RESTApi.php/_Order',
-                    //header: ('Access-Control-Allow-Origin: http://87.54.141.140/WebService/RESTApi.php/_order'),
+                    //We don't allow cross domain resource sharing and need to call the api on the localhost.
+                    // (This could be fixed, but its out of scope.)
                     //url: 'http://87.54.141.140/WebService/RESTApi.php/_order',
-                    url: 'http://localhost:8080/RESTApi.php/_order',
+                    url: 'http://localhost:8080/TechnicalServices/RESTApi.php/_order',
                     type: "POST",
                     data: JSON.stringify(currentRequest),
                     processData: false,
@@ -91,6 +91,8 @@ $(document).ready(function () {
 
                         //TODO: this is the place the remove should be. Unfortunately none of the syntax tried worked.
                         //$('#requestTable tr:last').remove();
+                        //document.getElementById("requestTable").deleteRow(currentSelectedRequestID);
+                        //document.getElementById("availableTaxisTable").delteRow(selectedTaxiID);
 
                     },
                     error: function (jqXHR, textStatus, errorThrown) {

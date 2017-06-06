@@ -6,7 +6,7 @@
  * Time: 14:29
  * new IP Add: 87.54.141.140
  */
-include('Database.php');
+include('Persistence/Database.php');
 
 $Database = new Database();
 
@@ -161,9 +161,8 @@ if ($method == 'GET' && $key != 'validation') {
     $result = $Database->doExecuteQuery($sql);
 }
 
-if ($booleanFlipped!=null){
-   // $result.=$booleanFlipped;
-}
+
+
 
 //We set and encode the response and send it
 $response = json_encode($result);
