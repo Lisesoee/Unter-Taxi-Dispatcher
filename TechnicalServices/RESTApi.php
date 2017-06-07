@@ -145,7 +145,8 @@ switch ($method) {
 
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
-
+                    $mailer = new Mailer();
+                    $mailer->sendMail("notruth500@gmail.com", "helloo", "it worksss");
                     break;
 
             }
