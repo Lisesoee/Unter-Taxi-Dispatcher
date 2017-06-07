@@ -11,11 +11,14 @@ class Mailer
 {
     private $username="unterdevelopmentteam@gmail.com" , $password= "UnterApplication1234";
 
-    function sendMail($toAdd,$subject,$body){
-        //initializing a new PHPMailer Object
+   public function sendMail($toAdd,$subject,$body){
+       echo "hello";
+       $rootpath = dirname(__FILE__) . '\PHPmailer\\';
+       require $rootpath . 'PHPMailerAutoload.php';
+       //initializing a new PHPMailer Object
         $mail = new PHPMailer();
         //enabling SMTP
-        //$mail->IsSMTP();
+        $mail->IsSMTP();
         //the value 1 is for both errors and messages, 2 is for messages only
         $mail->SMTPDebug=1;
         //enabling authentication
