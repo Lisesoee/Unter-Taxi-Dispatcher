@@ -19,7 +19,7 @@ footer {
     right: 0;
     bottom: 0;
     left: 0;
-    padding: 1rem;
+    height: 10%;
     background-color: #ffff00;
     text-align: center;
 }
@@ -56,6 +56,10 @@ h1 {
     align-content: flex-start;
 }
 
+.img-responsive2 {
+    display: flex;
+    max-height: 100%;
+}
 
 
 tr:hover {

@@ -79,7 +79,17 @@ class HomePage
                 <!-- jQuery library -->
                 <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js\"></script>
                 <!-- Latest compiled JavaScript -->
-                <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>"
+                <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>
+                
+                <script>
+                $(document).ready(function () {
+                    $('ul.nav > li').click(function (e) {
+                        e.preventDefault();
+                        $('ul.nav > li').removeClass('active');
+                        $(this).addClass('active');                
+                    });            
+                });
+                </script>"
 
             . $this->additionalLinks .
 
@@ -97,12 +107,16 @@ class HomePage
             <nav class="navbar navbar-inverse">
                 <div class="container-fluid">
                     <div class="navbar-header">
+                            <a class="navbar-brand" href="DispatchTaxisPage.php">
+                                <img class="img-responsive2" src="images/unterLogo.png">
+                            </a>
                         <a class="navbar-brand" href="#">Unter Dispatcher</a>
+
                     </div>
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Home</a></li>
-                        <li><a href="#">Page 1</a></li>
-                        <li><a href="#">Page 2</a></li>
+                        <li><a href="DispatchTaxisPage.php">Dispatch Taxis</a></li>
+                        <li><a href="ManageCustomers.php">Decrease customer priority</a></li>
+                        <li><a href="ManageCustomers.php">Manage Customers</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
 
@@ -122,6 +136,8 @@ class HomePage
     private function DisplayFooter()
     {
         echo "<footer>
+                <img src=\"images/unterLogo.png\" alt=\"UnterLogo\" class=\"image-responsive\" height=\"60\" width=\"60\">
+
                 Developed by Rayan and Lise inc.
             </footer>";
     }

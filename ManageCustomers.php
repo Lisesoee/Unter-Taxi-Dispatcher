@@ -40,11 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $manageCustomersPage->decrementCustomer($customerID);
 }
 
+$manageCustomersPage->additionalLinks ="
+<link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">";
+
 //We set the body/content of the page:
 $manageCustomersPage->pageContent = "
 
 <body>
-<div style = 'position: relative'>".$manageCustomersPage->decrementSucceedComment."
+<div class=\"flex-container\" style = 'position: relative'>".$manageCustomersPage->decrementSucceedComment."
 <form action='ManageCustomers.php' method='POST' name='decrementCustomerPriorityForm'>
     <p>ID of customer: </p>
     <input type='text' name='customerID'> 
