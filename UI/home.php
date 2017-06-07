@@ -20,7 +20,7 @@ function callRESTApi($params)
 
     //We get the json-file containing all the requests:
     //$response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
-    $response = file_get_contents('http://localhost:8080/RESTApi.php/' . $params);
+    $response = file_get_contents('http://localhost/TechnicalServices/RESTApi.php/' . $params);
 
     /**
      * We need to decode the http-response so we can use and display it:
@@ -267,7 +267,7 @@ function displayAvailableTaxis()
                         //We send a HTTP request to the RESTApi with the order information:
                         $.ajax({
                             //url: 'http://360itsolutions.dk/RESTApi.php/_Order',
-                            url: 'http://localhost:8080/RESTApi.php/_Order',
+                            url: 'http://localhost/TechnicalServices/RESTApi.php/_Order',
                             type: "POST",
                             data: JSON.stringify(currentRequest),
                             processData: false,

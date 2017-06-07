@@ -38,16 +38,18 @@ class DispatchTaxisPage extends HomePage
                         $LName = $thisCustomer->LName;
                         $PreferredBrand = $thisCustomer->Preferred_Brand;
                         $PhoneNb = $thisCustomer->PhoneNb;
+                        $Priority = $thisCustomer->Priority;
 
                         //For each request with the given customer, we echo to the table:
                         $pendingRequestsTableRows = $pendingRequestsTableRows . "<tr id = '$requestID' class = 'requestRow'>
-                        <td>$FName</td>
-                        <td>$LName</td>
+                        <td>$customerID</td>
+                        <td>$FName $LName</td>
                         <td>$PreferredBrand</td>
                         <td>$PhoneNb</td>
                         <td>$fromAddress</td>
                         <td>$toLocation</td>
                         <td>$time</td>
+                        <td>$Priority</td>
                         </tr>";
                     }
                 }
@@ -168,13 +170,15 @@ $dispatchPage->pageContent = "<body>
             <table id=\"requestTable\" class=\"table-condensed table-responsive\">
                 <thead>
                 <tr>
-                    <th onclick=\"sortTable(0, 'requestTable')\">First name</th>
-                    <th onclick=\"sortTable(1, 'requestTable')\">Last name</th>
+                
+                    <th onclick=\"sortTable(0, 'requestTable')\">ID</th>
+                    <th onclick=\"sortTable(1, 'requestTable')\">Name</th>
                     <th onclick=\"sortTable(2, 'requestTable')\">Brand preff.</th>
                     <th onclick=\"sortTable(3, 'requestTable')\">Phone no</th>
                     <th onclick=\"sortTable(4, 'requestTable')\">From address</th>
                     <th onclick=\"sortTable(5, 'requestTable')\">To address</th>
                     <th onclick=\"sortTable(6, 'requestTable')\">Time</th>
+                    <th onclick=\"sortTable(7, 'requestTable')\">Priority</th>
                 </tr>
                 </thead>
 

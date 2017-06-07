@@ -19,13 +19,13 @@ footer {
     right: 0;
     bottom: 0;
     left: 0;
-    padding: 1rem;
-    background-color: #ffff00;
+    height: 10%;
+    background-color: #ffcc00;
     text-align: center;
 }
 
 dev {
-    background-color: #ffff00;
+    background-color: #ffcc00;
 
 }
 
@@ -56,6 +56,10 @@ h1 {
     align-content: flex-start;
 }
 
+.img-responsive2 {
+    display: flex;
+    max-height: 100%;
+}
 
 
 tr:hover {
