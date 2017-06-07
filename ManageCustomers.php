@@ -10,7 +10,16 @@ require("HomePage.php");
 
 class ManageCustomersPage extends HomePage
 {
-    public function decrementCustomer(){
+    public $decrementSucceedComment ='';
+
+    public function decrementCustomer($customerID){
+        $ch = curl_init('http://87.54.141.140/WebService/RESTApi.php/decrementCustomer/'.$customerID);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        $this->decrementSucceedComment = "Customer with id ".$customerID." has been down-prioritized.";
 
     }
 
@@ -18,35 +27,22 @@ class ManageCustomersPage extends HomePage
 
 }
 
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') //if this is the first time, it does nothing
-{
-    //TODO: could be in a method in the class instead of here:
-    $customerID = htmlspecialchars($_POST['customerID']);
-
-    $ch = curl_init('http://87.54.141.140/WebService/RESTApi.php/decrementCustomer/'.$customerID);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($ch);
-    curl_close($ch);
-
-    echo "Customer with id ".$customerID." has been down-prioritized.";
-}
-
-
-
-
-
-/**
- * Following code is for creating the page, setting the different parts of the html document, and displaying the page.
- */
+//We initialize the page:
+//Note: this needs to be above the POST-code
 $manageCustomersPage = new ManageCustomersPage();
+
+//If it is the first time, it does nothing. If form is submitted, it decrements the given customer:
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    $customerID = htmlspecialchars($_POST['customerID']);
+    $manageCustomersPage->decrementCustomer($customerID);
+}
 
 //We set the body/content of the page:
 $manageCustomersPage->pageContent = "
 
 <body>
-<div style = 'position: relative'>
+<div style = 'position: relative'>".$manageCustomersPage->decrementSucceedComment."
 <form action='ManageCustomers.php' method='POST' name='decrementCustomerPriorityForm'>
     <p>ID of customer: </p>
     <input type='text' name='customerID'> 
@@ -63,6 +59,5 @@ $manageCustomersPage->pageContent = "
 
 //And finally, we display the page using the super-function (after all the specific sections has been set)
 $manageCustomersPage->DisplayPage();
-
 
 ?>
