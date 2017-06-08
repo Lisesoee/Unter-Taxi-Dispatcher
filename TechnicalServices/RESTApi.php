@@ -23,7 +23,7 @@ $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
 //We get the table and key from the chunks of the end of the URL
 $table = array_shift($request);
 $key = array_shift($request);
-
+$key1= array_shift($request);
 
 //TODO: delete:
 //In case of updating or posting, we need the new values:
@@ -33,10 +33,12 @@ $key = array_shift($request);
 switch ($method) {
     case 'GET':
         //If there is no id, we get all instances:
-        if ($key == null) {
+        if ($key == null && $key1==null) {
             $sql = "SELECT * FROM `$table`";
-        } else {
-            $sql = "SELECT * FROM `$table` WHERE id =$key;";
+        } else if($key1==null){
+            $sql = "SELECT * FROM `$table` WHERE id =$key";
+        }else{
+            $sql = "SELECT * FROM `$table` WHERE $key1 =$key";
         }
 
 
@@ -67,11 +69,17 @@ switch ($method) {
             switch ($table) {
                 case 'request':
                     $columns = "FK_customer_ID, From_Location, To_Location";
-                    $customer_ID = $decodedContent['FK_Customer_ID'];
+                    $credentials_ID = $decodedContent['FK_Customer_ID'];
+                    $response = file_get_contents('http://localhost/TechnicalServices/RESTApi.php/_customer/'.$credentials_ID.'/FK_credentials_ID');
+                    $response = json_decode($response);
+                    foreach ($response as $item){
+                        $customer_ID = $item->ID;
+                    }
                     $from_Location = $decodedContent['From_Location'];
                     $to_Location = $decodedContent['To_Location'];
 
                     $values = $customer_ID . ',\'' . $from_Location . '\',\'' . $to_Location . '\'';
+
                     break;
 
                 case '_customer':
@@ -165,7 +173,11 @@ switch ($method) {
     case 'DELETE':
         //TODO: when deleting customer, we just flip the active-boolean
         //We dont really use delete, but now it is here..
-        $sql = "DELETE FROM `$table` WHERE ID =$key";
+        if($key1==null) {
+            $sql = "DELETE FROM `$table` WHERE ID =$key";
+        }else{
+            $sql = "DELETE FROM `$table` WHERE $key1 =$key";
+        }
         break;
 }
 

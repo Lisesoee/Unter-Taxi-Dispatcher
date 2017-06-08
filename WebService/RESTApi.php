@@ -8,6 +8,8 @@
  */
 //include('Database.php');
 
+include('Persistence/Database.php');
+require ('Mailer.php');
 $Database = new Database();
 
 //We get the content of the http-body and trim it:
@@ -21,9 +23,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
 
 //We get the table and key from the chunks of the end of the URL
-$case = array_shift($request);
+$table = array_shift($request);
 $key = array_shift($request);
-
+$key1= array_shift($request);
 
 //TODO: delete:
 //In case of updating or posting, we need the new values:
@@ -33,83 +35,87 @@ $key = array_shift($request);
 switch ($method) {
     case 'GET':
         //If there is no id, we get all instances:
-        if ($key == null) {
-            $sql = "SELECT * FROM `$case`";
-        } else {
-            $sql = "SELECT * FROM `$case` WHERE id =$key;";
+        if ($key == null && $key1==null) {
+            $sql = "SELECT * FROM `$table`";
+        } else if($key1==null){
+            $sql = "SELECT * FROM `$table` WHERE id =$key";
+        }else{
+            $sql = "SELECT * FROM `$table` WHERE $key1 =$key";
         }
-        break;
 
+
+        break;
     case 'PUT':
-        switch($case){
+        switch($table){
             case 'mode':
+
+                //We reset the modes
+                $clearModesSql = "UPDATE `mode` SET is_Selected=0";
+                $Database->doExecuteQuery($clearModesSql);
+
+                //And set the values to flip the boolean:
                 $values = "is_Selected = 1";
                 echo $values;
-                echo $case.$key;
-                break;
-
-
-            case '_customer':
-                $values = "Priority = Priority-1";
-                echo $values;
-                echo $case+$key;
+                echo $table.$key;
                 break;
         }
         //Syntax example: Update Customer set Name = newName where id = 1;
-        $sql = "UPDATE `$case` SET $values WHERE ID =$key;";
+        $sql = "UPDATE `$table` SET $values WHERE ID =$key;";
         break;
 
     case 'POST':
         $decodedContent = json_decode($content, true);
 
-        if (is_array($decodedContent )|| $case = 'decrementCustomer') {
+        if (is_array($decodedContent)) {
             //We use a switch to set the appropriate columns for the given table:
-            switch ($case) {
+            switch ($table) {
                 case 'request':
                     $columns = "FK_customer_ID, From_Location, To_Location";
-                    $customer_ID = $decodedContent['FK_Customer_ID'];
+                    $credentials_ID = $decodedContent['FK_Customer_ID'];
+                    $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php/_customer/'.$credentials_ID.'/FK_credentials_ID');
+                    $response = json_decode($response);
+                    foreach ($response as $item){
+                        $customer_ID = $item->ID;
+                    }
                     $from_Location = $decodedContent['From_Location'];
                     $to_Location = $decodedContent['To_Location'];
 
                     $values = $customer_ID . ',\'' . $from_Location . '\',\'' . $to_Location . '\'';
+
                     break;
 
                 case '_customer':
+                    $columns = "FName, LName, PhoneNb, Preferred_Brand, FK_Credentials_ID";
 
-                     //Else its a regular POST-customer request and we continue:
-                        $columns = "FName, LName, PhoneNb, Preferred_Brand, FK_Credentials_ID";
-
-                        $credentials = $decodedContent["Credentials"];
-                        $customer = $decodedContent["Customer"];
+                    $credentials = $decodedContent["Credentials"];
+                    $customer = $decodedContent["Customer"];
 
 
-                        $credentials = json_encode($credentials);
-                        $ch = curl_init('http://localhost/RESTApi.php/credentials/');
-                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, $credentials);
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-                        $result = curl_exec($ch);
-                        curl_close($ch);
+                    $credentials = json_encode($credentials);
+                    $ch = curl_init('http://localhost/RESTApi.php/credentials/');
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $credentials);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+                    $result = curl_exec($ch);
+                    curl_close($ch);
 
-                        $select_cred_sql = "SELECT * FROM `credentials` WHERE ID=(SELECT MAX(ID) FROM `credentials`);";
+                    $select_cred_sql = "SELECT * FROM `credentials` WHERE ID=(SELECT MAX(ID) FROM `credentials`);";
 
-                        $insertedCred_ID = $Database->doSelect($select_cred_sql);
+                    $insertedCred_ID = $Database->doSelect($select_cred_sql);
 
-                        foreach ($insertedCred_ID as $item) {
-                            $FK_Credentials_ID = $item['ID'];
-                        }
+                    foreach ($insertedCred_ID as $item) {
+                        $FK_Credentials_ID = $item['ID'];
+                    }
 
-                        $firstName = $customer['FName'];
-                        $lastName = $customer['LName'];
-                        $phoneNb = $customer['PhoneNb'];
-                        $preferredBrand = $customer['Preferred_Brand'];
+                    $firstName = $customer['FName'];
+                    $lastName = $customer['LName'];
+                    $phoneNb = $customer['PhoneNb'];
+                    $preferredBrand = $customer['Preferred_Brand'];
 
-                        $values = '\'' . $firstName . '\',\'' . $lastName . '\',\'' . $phoneNb . '\',\'' . $preferredBrand . '\',' . $FK_Credentials_ID;
+                    $values = '\'' . $firstName . '\',\'' . $lastName . '\',\'' . $phoneNb . '\',\'' . $preferredBrand . '\',' . $FK_Credentials_ID;
 
-                        //echo $values; //for debugging purposes
-
-
+                    //echo $values; //for debugging purposes
 
                     break;
 
@@ -149,28 +155,15 @@ switch ($method) {
 
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
-
-
-                    break;
-
-                case 'decrementCustomer':
-                    //Since html does not support PUT, we redirect the request to the logical place:
-                    $ch = curl_init('http://87.54.141.140/WebService/RESTApi.php/_customer/'.$key);
-
-                    echo "before setting";
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-
-
-                    $response = curl_exec($ch);
+                    $mailer = new Mailer();
+                    $mailer->sendMail("notruth500@gmail.com", "helloo", "it worksss");
                     break;
 
             }
 
-            //
-            if ($key != 'validation' && $case !='decrementCustomer') {
+            if ($key != 'validation') {
                 //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
-                $sql = "INSERT INTO `$case` ($columns) VALUES ($values)";
+                $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
             }
 
             //echo $sql; //for debugging purposes
@@ -182,14 +175,14 @@ switch ($method) {
     case 'DELETE':
         //TODO: when deleting customer, we just flip the active-boolean
         //We dont really use delete, but now it is here..
-        $sql = "DELETE FROM `$case` WHERE ID =$key";
+        $sql = "DELETE FROM `$table` WHERE ID =$key";
         break;
 }
 
 //Execute sql statement
 if ($method == 'GET' && $key != 'validation') {
     $result = $Database->doSelect($sql);
-} else if ($method != 'GET' && $key != 'validation' && $case !='decrementCustomer') {
+} else if ($method != 'GET' && $key != 'validation') {
     $result = $Database->doExecuteQuery($sql);
 }
 
@@ -198,6 +191,8 @@ if ($method == 'GET' && $key != 'validation') {
 $response = json_encode($result);
 
 echo $response;
+
+
 
 
 /**
@@ -305,6 +300,77 @@ class Database
         return "'" . $connection->real_escape_string($value) . "'";
     }
 
+}
+require ('C:\xampp\htdocs\PHPMailer\PHPMailerAutoload.php');
+
+/**
+ * Class Mailer
+ * sends emails using the PHPMailer library
+ */
+class Mailer
+{
+    const USERNAME = "unterdevelopmentteam@gmail.com", PASSWORD = "UnterApplication1234",
+        PORT = 587,
+        HOST_NAME= 'smtp.gmail.com';
+
+    /**
+     * sends an email to the provided email address with the provided subject and body message
+     * uses the PHPMailer library & gmail smtp server
+     * uses tls
+     * prints out in case of error or success
+     * @param $toAdd
+     * @param $subject
+     * @param $body
+     */
+    public function sendMail($toAdd, $subject, $body)
+    {
+        //initializing a new PHPMailer Object
+        $mail = new PHPMailer();
+        //enabling SMTP
+        $mail->IsSMTP();
+        //used the value 3 to show connection status, client -> server and server -> client messages, lowest is 0 for no debugging messages
+        $mail->SMTPDebug = 3;
+        //enabling authentication
+        $mail->SMTPAuth = true;
+        //in order to avoid the openssl issue that wasn't solved locally on the developer's pc, these codes had to be added
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
+        //enabling secure transfer, it's required for gmail, using tls
+        $mail->SMTPSecure = 'tls';
+        //the host name for gmail
+        //the method gethostbyname is to get the IPv4 address corresponding to a given Internet host name
+        $mail->Host = gethostbyname(Mailer::HOST_NAME);
+        //this is not the only port that can be used -- this is for tls -- for ssl try 25 or 467
+        $mail->Port =Mailer::PORT;
+        //disabling the encryption in case the certificate at the server side is not valid
+        $mail->SMTPAutoTLS=false;
+        //sending plain text-- setting then the isHTML to false
+        $mail->isHTML(false);
+        //authentication username and password for the unter taxi development team
+        $mail->Username = Mailer::USERNAME; //"unterdevelopmentteam@gmail.com";
+        $mail->Password = Mailer::PASSWORD; //"UnterApplication1234";
+        //setting the from field in the mail message
+        $mail->setFrom(Mailer::USERNAME);
+        //setting the subject to the subject provided as argument
+        $mail->Subject = $subject;
+        //setting the body to the message provided as an argument
+        $mail->Body = $body;
+        //setting the destination address -- i.e. the email address to receive the mail message
+        $mail->AddAddress($toAdd);
+
+        if (!$mail->send()) {
+            //if the send operation fails printing out the error
+            echo "Error" . $mail->ErrorInfo;
+        } else {
+            //if the mail is sent successfully printing out the success
+            echo "Successssssss";
+        }
+    }
 }
 
 
