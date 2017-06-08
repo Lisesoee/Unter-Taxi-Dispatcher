@@ -19,7 +19,7 @@ class ManageCustomersPage extends HomePage
      * @param $customerID
      */
     public function decrementCustomer($customerID){
-        $ch = curl_init('http://87.54.141.140/WebService/RESTApi.php/decrementCustomer/'.$customerID);
+        $ch = curl_init('http://87.54.141.140/TechicalServices/RESTApi.php/decrementCustomer/'.$customerID);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);

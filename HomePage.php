@@ -22,7 +22,8 @@ class HomePage
 
 
     /**
-     * This function calls the RESTApi to place a HTTP request and do a CRUD function in the database
+     * This function get the content of the RESTApi.php file
+     * This works very similar to a GET-request, its just simpler since we do not need cURL
      *
      * @param $params : the parameters for specific operations
      * @return bool|mixed|string: returns the decoded response from the RESTApi
@@ -31,8 +32,7 @@ class HomePage
     {
 
         //We get the json-file containing all the requests:
-        //$response = file_get_contents('http://360itsolutions.dk/RESTApi.php/'.$params);
-        $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php/' . $params);
+        $response = file_get_contents('http://87.54.141.140/TechnicalServices/RESTApi.php/' . $params);
 
         /**
          * We need to decode the http-response so we can use and display it:

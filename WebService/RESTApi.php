@@ -6,7 +6,7 @@
  * Time: 14:29
  * new IP Add: 87.54.141.140
  */
-require ('C:\xampp\htdocs\WebService\Mailer.php');
+require ('C:\xampp\htdocs\TechnicalServices\Mailer.php');
 
 $Database = new Database();
 
@@ -157,7 +157,7 @@ switch ($method) {
 
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
-                    $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php/OrderConfirmation');
+                    $response = file_get_contents('http://87.54.141.140/TechnicalServices/RESTApi.php/OrderConfirmation');
                     //$response = json_decode($response);
                     break;
 
