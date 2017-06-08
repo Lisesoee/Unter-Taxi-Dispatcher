@@ -153,8 +153,7 @@ switch ($method) {
 
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
-                    $mailer = new Mailer();
-                    $mailer->sendMail("notruth500@gmail.com", "helloo", "it worksss");
+
                     break;
 
             }
@@ -191,6 +190,5 @@ if ($method == 'GET' && $key != 'validation') {
 
 //We set and encode the response and send it
 $response = json_encode($result);
-
 echo $response;
 

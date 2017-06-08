@@ -6,10 +6,8 @@
  * Time: 14:29
  * new IP Add: 87.54.141.140
  */
-//include('Database.php');
+require ('C:\xampp\htdocs\WebService\Mailer.php');
 
-include('Persistence/Database.php');
-require ('Mailer.php');
 $Database = new Database();
 
 //We get the content of the http-body and trim it:
@@ -23,7 +21,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
 
 //We get the table and key from the chunks of the end of the URL
-$table = array_shift($request);
+$case = array_shift($request);
 $key = array_shift($request);
 $key1= array_shift($request);
 
@@ -36,17 +34,21 @@ switch ($method) {
     case 'GET':
         //If there is no id, we get all instances:
         if ($key == null && $key1==null) {
-            $sql = "SELECT * FROM `$table`";
+            $sql = "SELECT * FROM `$case`";
         } else if($key1==null){
-            $sql = "SELECT * FROM `$table` WHERE id =$key";
-        }else{
-            $sql = "SELECT * FROM `$table` WHERE $key1 =$key";
+            $sql = "SELECT * FROM `$case` WHERE id =$key";
+        }else if($case=='OrderConfirmation'){
+            $mailer = new Mailer();
+            $mailer->sendMail("notruth500@gmail.com", "helloo", "it worksss");
+        }
+        else{
+            $sql = "SELECT * FROM `$case` WHERE $key1 =$key";
         }
 
 
         break;
     case 'PUT':
-        switch($table){
+        switch($case){
             case 'mode':
 
                 //We reset the modes
@@ -56,11 +58,11 @@ switch ($method) {
                 //And set the values to flip the boolean:
                 $values = "is_Selected = 1";
                 echo $values;
-                echo $table.$key;
+                echo $case.$key;
                 break;
         }
         //Syntax example: Update Customer set Name = newName where id = 1;
-        $sql = "UPDATE `$table` SET $values WHERE ID =$key;";
+        $sql = "UPDATE `$case` SET $values WHERE ID =$key;";
         break;
 
     case 'POST':
@@ -68,11 +70,11 @@ switch ($method) {
 
         if (is_array($decodedContent)) {
             //We use a switch to set the appropriate columns for the given table:
-            switch ($table) {
+            switch ($case) {
                 case 'request':
                     $columns = "FK_customer_ID, From_Location, To_Location";
                     $credentials_ID = $decodedContent['FK_Customer_ID'];
-                    $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php/_customer/'.$credentials_ID.'/FK_credentials_ID');
+                    $response = file_get_contents('http://localhost/TechnicalServices/RESTApi.php/_customer/'.$credentials_ID.'/FK_credentials_ID');
                     $response = json_decode($response);
                     foreach ($response as $item){
                         $customer_ID = $item->ID;
@@ -155,15 +157,15 @@ switch ($method) {
 
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
-                    $mailer = new Mailer();
-                    $mailer->sendMail("notruth500@gmail.com", "helloo", "it worksss");
+                    $response = file_get_contents('http://87.54.141.140/WebService/RESTApi.php/OrderConfirmation');
+                    //$response = json_decode($response);
                     break;
 
             }
 
             if ($key != 'validation') {
                 //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
-                $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
+                $sql = "INSERT INTO `$case` ($columns) VALUES ($values)";
             }
 
             //echo $sql; //for debugging purposes
@@ -175,23 +177,25 @@ switch ($method) {
     case 'DELETE':
         //TODO: when deleting customer, we just flip the active-boolean
         //We dont really use delete, but now it is here..
-        $sql = "DELETE FROM `$table` WHERE ID =$key";
+        if($key1==null) {
+            $sql = "DELETE FROM `$case` WHERE ID =$key";
+        }else{
+            $sql = "DELETE FROM `$case` WHERE $key1 =$key";
+        }
         break;
 }
 
 //Execute sql statement
-if ($method == 'GET' && $key != 'validation') {
+if ($method == 'GET' && $key != 'validation' && $case!='OrderConfirmation') {
     $result = $Database->doSelect($sql);
-} else if ($method != 'GET' && $key != 'validation') {
+} else if ($method != 'GET' && $key != 'validation' && $case!='OrderConfirmation') {
     $result = $Database->doExecuteQuery($sql);
 }
 
 
 //We set and encode the response and send it
 $response = json_encode($result);
-
 echo $response;
-
 
 
 
@@ -301,77 +305,3 @@ class Database
     }
 
 }
-require ('C:\xampp\htdocs\PHPMailer\PHPMailerAutoload.php');
-
-/**
- * Class Mailer
- * sends emails using the PHPMailer library
- */
-class Mailer
-{
-    const USERNAME = "unterdevelopmentteam@gmail.com", PASSWORD = "UnterApplication1234",
-        PORT = 587,
-        HOST_NAME= 'smtp.gmail.com';
-
-    /**
-     * sends an email to the provided email address with the provided subject and body message
-     * uses the PHPMailer library & gmail smtp server
-     * uses tls
-     * prints out in case of error or success
-     * @param $toAdd
-     * @param $subject
-     * @param $body
-     */
-    public function sendMail($toAdd, $subject, $body)
-    {
-        //initializing a new PHPMailer Object
-        $mail = new PHPMailer();
-        //enabling SMTP
-        $mail->IsSMTP();
-        //used the value 3 to show connection status, client -> server and server -> client messages, lowest is 0 for no debugging messages
-        $mail->SMTPDebug = 3;
-        //enabling authentication
-        $mail->SMTPAuth = true;
-        //in order to avoid the openssl issue that wasn't solved locally on the developer's pc, these codes had to be added
-        $mail->SMTPOptions = array(
-            'ssl' => array(
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            )
-        );
-        //enabling secure transfer, it's required for gmail, using tls
-        $mail->SMTPSecure = 'tls';
-        //the host name for gmail
-        //the method gethostbyname is to get the IPv4 address corresponding to a given Internet host name
-        $mail->Host = gethostbyname(Mailer::HOST_NAME);
-        //this is not the only port that can be used -- this is for tls -- for ssl try 25 or 467
-        $mail->Port =Mailer::PORT;
-        //disabling the encryption in case the certificate at the server side is not valid
-        $mail->SMTPAutoTLS=false;
-        //sending plain text-- setting then the isHTML to false
-        $mail->isHTML(false);
-        //authentication username and password for the unter taxi development team
-        $mail->Username = Mailer::USERNAME; //"unterdevelopmentteam@gmail.com";
-        $mail->Password = Mailer::PASSWORD; //"UnterApplication1234";
-        //setting the from field in the mail message
-        $mail->setFrom(Mailer::USERNAME);
-        //setting the subject to the subject provided as argument
-        $mail->Subject = $subject;
-        //setting the body to the message provided as an argument
-        $mail->Body = $body;
-        //setting the destination address -- i.e. the email address to receive the mail message
-        $mail->AddAddress($toAdd);
-
-        if (!$mail->send()) {
-            //if the send operation fails printing out the error
-            echo "Error" . $mail->ErrorInfo;
-        } else {
-            //if the mail is sent successfully printing out the success
-            echo "Successssssss";
-        }
-    }
-}
-
-
-
