@@ -1,14 +1,12 @@
 /**
  * Created by LiseMusen on 05-06-2017.
  */
-//This script adds functionality for selecting rows in the tables.
-//The 'selected...' classes are coloured differently using CSS and will be used when dispatching the selected taxi to the selected requests
+
 
 $(document).ready(function () {
 
-    //alert('loaded'); //for debugging purposes
-
-    //$(document).on('click','table tr', function(){
+    //This part of the script adds functionality for selecting rows in the tables.
+    //The 'selected...' classes are coloured differently using CSS and will be used when dispatching the selected taxi to the selected requests
     $('table tr').click(function () {
 
         //alert('click fired'); //for debuggin purposes
@@ -44,7 +42,6 @@ $(document).ready(function () {
 
 
 
-
     //When button is clicked:
     $("#dispatchButton").click(function () {
 
@@ -67,13 +64,11 @@ $(document).ready(function () {
                 };
 
 
-
                 //We remove the row:
                 //TODO: find some way to remove inthe success case of the ajax-request.
                 // (We don't want to remove the line unless the order was successful,
                 // but the scope hinders use of 'this' which complicates things.)
                 $(this).remove();
-
 
                 //We send a HTTP request to the RESTApi with the order information:
                 //Note: when the order is placed, the booleans for the taxi availability and request status is flipped automatically.

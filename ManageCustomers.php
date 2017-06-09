@@ -12,7 +12,6 @@ class ManageCustomersPage extends HomePage
 {
     public $decrementSucceedComment ='';
 
-
     /**
      * This function calls the RESTApi with a request for decrementing the priority of the given customer.
      * The method also sets the comment for the page that will show whenever the form is submitted.
@@ -61,5 +60,4 @@ $manageCustomersPage->pageContent = "
 
 //And finally, we display the page using the super-function (after all the specific sections has been set)
 $manageCustomersPage->DisplayPage();
-
 ?>

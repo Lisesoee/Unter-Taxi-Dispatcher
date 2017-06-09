@@ -25,11 +25,6 @@ $case = array_shift($request);
 $key = array_shift($request);
 $key1 = array_shift($request);
 
-//TODO: delete:
-//In case of updating or posting, we need the new values:
-//$values = array_shift($request);
-
-
 switch ($method) {
     case 'GET':
         //If there is no id, we get all instances:

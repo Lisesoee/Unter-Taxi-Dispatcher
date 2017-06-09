@@ -113,13 +113,9 @@ class DispatchTaxisPage extends HomePage
     }
 
     public function modeSelected($selectedMode, $modeID){
-//        $response = $this->callRESTApi('mode/'.$selectedMode);
-
-
         if(isset($_PUT['modeSelected'])){
             mainInfo($_PUT['modeSelected']);
         }
-
 
         $data = array("name" => $selectedMode);
         echo $data; //for debugging
@@ -135,9 +131,6 @@ class DispatchTaxisPage extends HomePage
     }
 }
 
-
-
-
 /**
  * Following code is for creating the page, setting the different parts of the html document, and displaying the page.
  */
@@ -149,8 +142,6 @@ $dispatchPage->additionalLinks = "
     <script src=\"js/sortTableGeneric.js\" type=\"text/javascript\"></script>
     <link rel=\"stylesheet\" type=\"text/css\" href=\"css/customStyles.css\">
 ";
-
-
 
 
 //We set the body/content of the page:
@@ -222,9 +213,6 @@ $dispatchPage->pageContent = "<body>
     </div>
 </div>
 </body>";
-
-
-
 
 //And finally, we display the page (after all the specific sections has been set)
 $dispatchPage->DisplayPage();

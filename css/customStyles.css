@@ -10,10 +10,6 @@ header {
     padding: 2%
 }
 
-body {
-
-}
-
 footer {
     position: relative;
     right: 0;
@@ -60,7 +56,6 @@ h1 {
     display: flex;
     max-height: 100%;
 }
-
 
 tr:hover {
     background-color: #ffcc00;
