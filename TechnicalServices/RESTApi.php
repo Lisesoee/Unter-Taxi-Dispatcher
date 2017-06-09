@@ -7,7 +7,7 @@
  * new IP Add: 87.54.141.140
  */
 include('Persistence/Database.php');
-require ('Mailer.php');
+require('Mailer.php');
 $Database = new Database();
 
 //We get the content of the http-body and trim it:
@@ -21,9 +21,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
 
 //We get the table and key from the chunks of the end of the URL
-$table = array_shift($request);
+$case = array_shift($request);
 $key = array_shift($request);
-
+$key1 = array_shift($request);
 
 //TODO: delete:
 //In case of updating or posting, we need the new values:
@@ -33,16 +33,22 @@ $key = array_shift($request);
 switch ($method) {
     case 'GET':
         //If there is no id, we get all instances:
-        if ($key == null) {
-            $sql = "SELECT * FROM `$table`";
+        if ($key == null && $key1 == null) {
+            $sql = "SELECT * FROM `$case`";
+        } else if ($key1 == null) {
+            $sql = "SELECT * FROM `$case` WHERE id =$key";
+
+        } else if ($case == 'OrderConfirmation') {
+            $mailer = new Mailer();
+            $mailer->sendMail("notruth500@gmail.com", "helloo", "it worksss");
         } else {
-            $sql = "SELECT * FROM `$table` WHERE id =$key;";
+            $sql = "SELECT * FROM `$case` WHERE $key1 =$key";
         }
 
 
         break;
     case 'PUT':
-        switch($table){
+        switch ($case) {
             case 'mode':
 
                 //We reset the modes
@@ -52,11 +58,11 @@ switch ($method) {
                 //And set the values to flip the boolean:
                 $values = "is_Selected = 1";
                 echo $values;
-                echo $table.$key;
+                echo $case . $key;
                 break;
         }
         //Syntax example: Update Customer set Name = newName where id = 1;
-        $sql = "UPDATE `$table` SET $values WHERE ID =$key;";
+        $sql = "UPDATE `$case` SET $values WHERE ID =$key;";
         break;
 
     case 'POST':
@@ -64,14 +70,20 @@ switch ($method) {
 
         if (is_array($decodedContent)) {
             //We use a switch to set the appropriate columns for the given table:
-            switch ($table) {
+            switch ($case) {
                 case 'request':
                     $columns = "FK_customer_ID, From_Location, To_Location";
-                    $customer_ID = $decodedContent['FK_Customer_ID'];
+                    $credentials_ID = $decodedContent['FK_Customer_ID'];
+                    $response = file_get_contents('http://87.54.141.140/TechnicalServices/RESTApi.php/_customer/' . $credentials_ID . '/FK_credentials_ID');
+                    $response = json_decode($response);
+                    foreach ($response as $item) {
+                        $customer_ID = $item->ID;
+                    }
                     $from_Location = $decodedContent['From_Location'];
                     $to_Location = $decodedContent['To_Location'];
 
                     $values = $customer_ID . ',\'' . $from_Location . '\',\'' . $to_Location . '\'';
+
                     break;
 
                 case '_customer':
@@ -139,20 +151,21 @@ switch ($method) {
 
                     //We flip the booleans:
                     $flipRequestBoolean = "UPDATE `request` SET isDispatched = TRUE WHERE ID =$request_ID";
-                    $Database ->doExecuteQuery($flipRequestBoolean);
+                    $Database->doExecuteQuery($flipRequestBoolean);
                     $flipTaxiBoolean = "UPDATE `taxi` SET isAvailable = FALSE WHERE ID =$taxi_ID";
-                    $Database ->doExecuteQuery($flipTaxiBoolean);
+                    $Database->doExecuteQuery($flipTaxiBoolean);
 
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
-
+                    $response = file_get_contents('http://87.54.141.140/TechnicalServices/RESTApi.php/OrderConfirmation');
+                    $response = json_encode($response);
                     break;
 
             }
 
             if ($key != 'validation') {
                 //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
-                $sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
+                $sql = "INSERT INTO `$case` ($columns) VALUES ($values)";
             }
 
             //echo $sql; //for debugging purposes
@@ -164,21 +177,23 @@ switch ($method) {
     case 'DELETE':
         //TODO: when deleting customer, we just flip the active-boolean
         //We dont really use delete, but now it is here..
-        $sql = "DELETE FROM `$table` WHERE ID =$key";
+        if ($key1 == null) {
+            $sql = "DELETE FROM `$case` WHERE ID =$key";
+        } else {
+            $sql = "DELETE FROM `$case` WHERE $key1 =$key";
+        }
         break;
 }
-$mailer = new Mailer();
-$mailer->sendMail("notruth500@gmail.com", "helloo", "it worksss");
+
 //Execute sql statement
-if ($method == 'GET' && $key != 'validation') {
+if ($method == 'GET' && $key != 'validation' && $case != 'OrderConfirmation') {
     $result = $Database->doSelect($sql);
-} else if ($method != 'GET' && $key != 'validation') {
+} else if ($method != 'GET' && $key != 'validation' && $case != 'OrderConfirmation') {
     $result = $Database->doExecuteQuery($sql);
 }
 
-
+if($case != 'OrderConfirmation') {
 //We set and encode the response and send it
-$response = json_encode($result);
-echo "echoooo";
-echo $response;
-
+    $response = json_encode($result);
+    echo $response;
+}

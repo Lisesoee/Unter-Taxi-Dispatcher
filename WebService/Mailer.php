@@ -13,7 +13,7 @@ require ('C:\xampp\htdocs\PHPMailer\PHPMailerAutoload.php');
 class Mailer
 {
      const USERNAME = "unterdevelopmentteam@gmail.com", PASSWORD = "UnterApplication1234",
-        PORT = 25,
+        PORT = 587,
         HOST_NAME= 'smtp.gmail.com';
 
     /**

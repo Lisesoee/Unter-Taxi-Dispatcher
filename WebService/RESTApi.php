@@ -6,7 +6,7 @@
  * Time: 14:29
  * new IP Add: 87.54.141.140
  */
-//include('Database.php');
+require ('C:\xampp\htdocs\TechnicalServices\Mailer.php');
 
 $Database = new Database();
 
@@ -23,7 +23,7 @@ $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
 //We get the table and key from the chunks of the end of the URL
 $case = array_shift($request);
 $key = array_shift($request);
-
+$key1= array_shift($request);
 
 //TODO: delete:
 //In case of updating or posting, we need the new values:
@@ -33,26 +33,32 @@ $key = array_shift($request);
 switch ($method) {
     case 'GET':
         //If there is no id, we get all instances:
-        if ($key == null) {
+        if ($key == null && $key1==null) {
             $sql = "SELECT * FROM `$case`";
-        } else {
-            $sql = "SELECT * FROM `$case` WHERE id =$key;";
+        } else if($key1==null){
+            $sql = "SELECT * FROM `$case` WHERE id =$key";
+        }else if($case=='OrderConfirmation'){
+            $mailer = new Mailer();
+            $mailer->sendMail("notruth500@gmail.com", "helloo", "it worksss");
         }
-        break;
+        else{
+            $sql = "SELECT * FROM `$case` WHERE $key1 =$key";
+        }
 
+
+        break;
     case 'PUT':
         switch($case){
             case 'mode':
+
+                //We reset the modes
+                $clearModesSql = "UPDATE `mode` SET is_Selected=0";
+                $Database->doExecuteQuery($clearModesSql);
+
+                //And set the values to flip the boolean:
                 $values = "is_Selected = 1";
                 echo $values;
                 echo $case.$key;
-                break;
-
-
-            case '_customer':
-                $values = "Priority = Priority-1";
-                echo $values;
-                echo $case+$key;
                 break;
         }
         //Syntax example: Update Customer set Name = newName where id = 1;
@@ -62,54 +68,56 @@ switch ($method) {
     case 'POST':
         $decodedContent = json_decode($content, true);
 
-        if (is_array($decodedContent )|| $case = 'decrementCustomer') {
+        if (is_array($decodedContent)) {
             //We use a switch to set the appropriate columns for the given table:
             switch ($case) {
                 case 'request':
                     $columns = "FK_customer_ID, From_Location, To_Location";
-                    $customer_ID = $decodedContent['FK_Customer_ID'];
+                    $credentials_ID = $decodedContent['FK_Customer_ID'];
+                    $response = file_get_contents('http://localhost/TechnicalServices/RESTApi.php/_customer/'.$credentials_ID.'/FK_credentials_ID');
+                    $response = json_decode($response);
+                    foreach ($response as $item){
+                        $customer_ID = $item->ID;
+                    }
                     $from_Location = $decodedContent['From_Location'];
                     $to_Location = $decodedContent['To_Location'];
 
                     $values = $customer_ID . ',\'' . $from_Location . '\',\'' . $to_Location . '\'';
+
                     break;
 
                 case '_customer':
+                    $columns = "FName, LName, PhoneNb, Preferred_Brand, FK_Credentials_ID";
 
-                     //Else its a regular POST-customer request and we continue:
-                        $columns = "FName, LName, PhoneNb, Preferred_Brand, FK_Credentials_ID";
-
-                        $credentials = $decodedContent["Credentials"];
-                        $customer = $decodedContent["Customer"];
+                    $credentials = $decodedContent["Credentials"];
+                    $customer = $decodedContent["Customer"];
 
 
-                        $credentials = json_encode($credentials);
-                        $ch = curl_init('http://localhost/RESTApi.php/credentials/');
-                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, $credentials);
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-                        $result = curl_exec($ch);
-                        curl_close($ch);
+                    $credentials = json_encode($credentials);
+                    $ch = curl_init('http://localhost/RESTApi.php/credentials/');
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $credentials);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+                    $result = curl_exec($ch);
+                    curl_close($ch);
 
-                        $select_cred_sql = "SELECT * FROM `credentials` WHERE ID=(SELECT MAX(ID) FROM `credentials`);";
+                    $select_cred_sql = "SELECT * FROM `credentials` WHERE ID=(SELECT MAX(ID) FROM `credentials`);";
 
-                        $insertedCred_ID = $Database->doSelect($select_cred_sql);
+                    $insertedCred_ID = $Database->doSelect($select_cred_sql);
 
-                        foreach ($insertedCred_ID as $item) {
-                            $FK_Credentials_ID = $item['ID'];
-                        }
+                    foreach ($insertedCred_ID as $item) {
+                        $FK_Credentials_ID = $item['ID'];
+                    }
 
-                        $firstName = $customer['FName'];
-                        $lastName = $customer['LName'];
-                        $phoneNb = $customer['PhoneNb'];
-                        $preferredBrand = $customer['Preferred_Brand'];
+                    $firstName = $customer['FName'];
+                    $lastName = $customer['LName'];
+                    $phoneNb = $customer['PhoneNb'];
+                    $preferredBrand = $customer['Preferred_Brand'];
 
-                        $values = '\'' . $firstName . '\',\'' . $lastName . '\',\'' . $phoneNb . '\',\'' . $preferredBrand . '\',' . $FK_Credentials_ID;
+                    $values = '\'' . $firstName . '\',\'' . $lastName . '\',\'' . $phoneNb . '\',\'' . $preferredBrand . '\',' . $FK_Credentials_ID;
 
-                        //echo $values; //for debugging purposes
-
-
+                    //echo $values; //for debugging purposes
 
                     break;
 
@@ -149,26 +157,13 @@ switch ($method) {
 
                     $values = $estimated_Time . ',\'' . $estimated_Payment . '\',' . $request_ID . ',' . $taxi_ID;
                     //echo $values; //for debugging purposes
-
-
-                    break;
-
-                case 'decrementCustomer':
-                    //Since html does not support PUT, we redirect the request to the logical place:
-                    $ch = curl_init('http://87.54.141.140/WebService/RESTApi.php/_customer/'.$key);
-
-                    echo "before setting";
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-
-
-                    $response = curl_exec($ch);
+                    $response = file_get_contents('http://87.54.141.140/TechnicalServices/RESTApi.php/OrderConfirmation');
+                    //$response = json_decode($response);
                     break;
 
             }
 
-            //
-            if ($key != 'validation' && $case !='decrementCustomer') {
+            if ($key != 'validation') {
                 //Syntax example: Insert into Customer (FName, LName, PhoneNb, Preferred_Brand) Values (Hans, Hansen, 1234, Honda);
                 $sql = "INSERT INTO `$case` ($columns) VALUES ($values)";
             }
@@ -182,22 +177,26 @@ switch ($method) {
     case 'DELETE':
         //TODO: when deleting customer, we just flip the active-boolean
         //We dont really use delete, but now it is here..
-        $sql = "DELETE FROM `$case` WHERE ID =$key";
+        if($key1==null) {
+            $sql = "DELETE FROM `$case` WHERE ID =$key";
+        }else{
+            $sql = "DELETE FROM `$case` WHERE $key1 =$key";
+        }
         break;
 }
 
 //Execute sql statement
-if ($method == 'GET' && $key != 'validation') {
+if ($method == 'GET' && $key != 'validation' && $case!='OrderConfirmation') {
     $result = $Database->doSelect($sql);
-} else if ($method != 'GET' && $key != 'validation' && $case !='decrementCustomer') {
+} else if ($method != 'GET' && $key != 'validation' && $case!='OrderConfirmation') {
     $result = $Database->doExecuteQuery($sql);
 }
 
 
 //We set and encode the response and send it
 $response = json_encode($result);
-
 echo $response;
+
 
 
 /**
@@ -306,6 +305,3 @@ class Database
     }
 
 }
-
-
-
